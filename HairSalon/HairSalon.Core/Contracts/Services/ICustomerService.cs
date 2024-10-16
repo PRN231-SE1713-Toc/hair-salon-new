@@ -1,4 +1,5 @@
-﻿using HairSalon.Core.Dtos.Responses;
+﻿using HairSalon.Core.Dtos.Requests;
+using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Entities;
 
 namespace HairSalon.Core.Contracts.Services
@@ -7,16 +8,16 @@ namespace HairSalon.Core.Contracts.Services
     {
         Task<LoginCustomerResponse?> CheckLoginForCustomer(string email, string password);
 
-        Task<List<Customer>> GetCustomers();
-
-
+        Task<List<CustomerResponse>> GetCustomers();
 
         Task<Customer?> GetCustomerById(int id);
 
-        Task<bool> CreateCustomer();
+        Task<CustomerResponse> GetCustomer(int id);
 
-        Task<bool> UpdateCustomer();
+        Task<bool> CreateCustomer(CreatedCustomerModel request);
 
-        Task<bool> DeleteCustomer();
+        Task<bool> UpdateCustomer(UpdatedCustomer updatedCustomer);
+
+        Task<bool> DeleteCustomer(Customer customer);
     }
 }

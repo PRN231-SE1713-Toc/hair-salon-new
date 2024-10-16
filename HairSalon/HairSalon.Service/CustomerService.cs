@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HairSalon.Core;
 using HairSalon.Core.Contracts.Services;
+using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -34,29 +35,76 @@ namespace HairSalon.Service
             return response;
         }
 
-        public Task<bool> CreateCustomer()
+        public async Task<bool> CreateCustomer(CreatedCustomerModel request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var customer = _mapper.Map<Customer>(request);
+                _unitOfWork.CustomerRepository.Add(customer);
+                await _unitOfWork.CommitAsync();
+                return true;
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                return false;
+            }
         }
 
-        public Task<bool> DeleteCustomer()
+        public async Task<bool> DeleteCustomer(Customer customer)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (customer is not null)
+                {
+                    _unitOfWork.CustomerRepository.Delete(customer);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                return false;
+            }
         }
 
-        public Task<Customer?> GetCustomerById(int id)
+        public async Task<Customer?> GetCustomerById(int id) => await _unitOfWork.CustomerRepository.FindByIdAsync(id);
+
+        public async Task<bool> UpdateCustomer(UpdatedCustomer updatedCustomer)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var customer = await _unitOfWork.CustomerRepository.FindByIdAsync(updatedCustomer.Id);
+                if (customer is not null)
+                {
+                    _ = _mapper.Map(updatedCustomer, customer);
+                    _unitOfWork.CustomerRepository.Update(customer);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch
+            {
+                await _unitOfWork.CommitAsync();
+                return false;
+            }
         }
 
-        public async Task<List<Customer>> GetCustomers()
+        public async Task<List<CustomerResponse>> GetCustomers()
         {
-            return await _unitOfWork.CustomerRepository.GetAll().AsNoTracking().ToListAsync();
+            var customers = await _unitOfWork.CustomerRepository.GetAll()
+                .AsNoTracking()
+                .ToListAsync();
+            return _mapper.Map<List<CustomerResponse>>(customers);
         }
 
-        public Task<bool> UpdateCustomer()
+        public async Task<CustomerResponse> GetCustomer(int id)
         {
-            throw new NotImplementedException();
+            var customer = await _unitOfWork.CustomerRepository.GetAsync(c => c.Id == id);
+            return _mapper.Map<CustomerResponse>(customer);
         }
     }
 }

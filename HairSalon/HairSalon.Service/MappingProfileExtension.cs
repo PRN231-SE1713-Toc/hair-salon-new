@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Entities;
 
@@ -12,6 +13,10 @@ namespace HairSalon.Service
 
             CreateMap<Employee, LoginEmployeeResponse>()
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()));
+
+            CreateMap<Customer, CustomerResponse>();
+            CreateMap<CreatedCustomerModel, Customer>();
+            CreateMap<UpdatedCustomer, Customer>();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using HairSalon.Infrastructure.Configurations;
+﻿using HairSalon.Core.Entities;
+using HairSalon.Infrastructure.Configurations;
 using HairSalon.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +11,22 @@ namespace HairSalon.Infrastructure
         public HairSalonDbContext() {}
 
         public HairSalonDbContext(DbContextOptions<HairSalonDbContext> options) : base(options) { }
+
+        public DbSet<Appointment> Appointments { get; set; }
+
+        public DbSet<AppointmentService> AppointmentServices { get; set; }
+        
+        public DbSet<Customer> Customers { get; set; }
+        
+        public DbSet<Employee> Employees { get; set; }
+        
+        public DbSet<EmployeeSchedule> EmployeeSchedules { get; set; }
+        
+        public DbSet<Service> Services { get; set; }
+        
+        public DbSet<StylistFeedback> StylistFeedbacks { get; set; }
+        
+        public DbSet<Transaction> Transactions { get; set; }
 
         private string GetConnectionString()
         {
