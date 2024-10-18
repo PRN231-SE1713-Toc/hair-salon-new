@@ -8,6 +8,8 @@ namespace HairSalon.Core.Dtos.Requests
 {
     public class UpdateEmployeeSchedule
     {
+        public int Id { get; set; }
+
         public int EmployeeId { get; set; }
 
         public DateOnly WorkingDate { get; set; }
