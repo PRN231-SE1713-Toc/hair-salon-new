@@ -17,6 +17,7 @@ namespace HairSalon.Service
             CreateMap<Customer, CustomerResponse>();
             CreateMap<CreatedCustomerModel, Customer>();
             CreateMap<UpdatedCustomer, Customer>();
+            CreateMap<Core.Entities.Service, ServiceDto>().ReverseMap();
 
             CreateMap<EmployeeSchedule, EmployeeScheduleResponse>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Employee.Name)); ;
