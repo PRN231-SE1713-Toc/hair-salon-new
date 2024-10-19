@@ -1,12 +1,16 @@
-﻿using HairSalon.Core.Enums;
+﻿using HairSalon.Core.Entities;
+using HairSalon.Core.Enums;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace HairSalon.Core.Entities
+namespace HairSalon.Core.Dtos.Requests
 {
-    public class Appointment : IEntity
+    public class AppointmentCreateModel
     {
-        public int Id { get; set; }
-
         public int CustomerId { get; set; }
 
         public int StylistId { get; set; }
@@ -24,15 +28,6 @@ namespace HairSalon.Core.Entities
 
         public ICollection<AppointmentService> AppointmentServices { get; set; } = new List<AppointmentService>();
 
-        public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
-
-        public Customer Customer { get; set; } = null!;
-
-        public Employee Stylist { get; set; } = null!;
-
-        public static explicit operator Appointment(AppointmentService v)
-        {
-            throw new NotImplementedException();
-        }
+        //public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
     }
 }

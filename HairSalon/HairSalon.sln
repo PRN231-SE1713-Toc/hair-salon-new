@@ -7,15 +7,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D8DB42A2-7DA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D0717748-8F1C-49B2-80A1-081FA8BAE003}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HairSalon.Api", "HairSalon.Api\HairSalon.Api.csproj", "{934F0BCA-53D2-4D3B-B98B-729675BD7518}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HairSalon.Api", "HairSalon.Api\HairSalon.Api.csproj", "{934F0BCA-53D2-4D3B-B98B-729675BD7518}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HairSalon.Core", "HairSalon.Core\HairSalon.Core.csproj", "{7DF1DF4F-3DC2-465F-A2BD-59CC5E500E8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HairSalon.Core", "HairSalon.Core\HairSalon.Core.csproj", "{7DF1DF4F-3DC2-465F-A2BD-59CC5E500E8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HairSalon.Infrastructure", "HairSalon.Infrastructure\HairSalon.Infrastructure.csproj", "{BF90DF06-1003-4C95-B90C-600B1AFFBF0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HairSalon.Infrastructure", "HairSalon.Infrastructure\HairSalon.Infrastructure.csproj", "{BF90DF06-1003-4C95-B90C-600B1AFFBF0E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HairSalon.Service", "HairSalon.Service\HairSalon.Service.csproj", "{B0137707-6AC9-44E0-9588-F777F883956F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HairSalon.Service", "HairSalon.Service\HairSalon.Service.csproj", "{B0137707-6AC9-44E0-9588-F777F883956F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HairSalon.Web", "HairSalon.Web\HairSalon.Web.csproj", "{C9CA59B0-9CF0-4DEE-9B6B-DFE345515B14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HairSalon.Web", "HairSalon.Web\HairSalon.Web.csproj", "{C9CA59B0-9CF0-4DEE-9B6B-DFE345515B14}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9394FACF-15AF-4B82-9D2F-1A8C4307E050}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
