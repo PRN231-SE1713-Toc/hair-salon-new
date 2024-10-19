@@ -1,38 +1,57 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HairSalon.Infrastructure;
+using AutoMapper;
+using HairSalon.Core.Contracts.Services;
+using HairSalon.Core.Dtos.Responses;
+using HairSalon.Core.Dtos.Requests;
 
 namespace HairSalon.Api.Controllers.v1
 {
     public class ServicesController : BaseApiController
     {
         private readonly HairSalonDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly IServiceService _hairService;
 
-        public ServicesController(HairSalonDbContext context)
+        public ServicesController(IMapper mapper, IServiceService hairService)
         {
-            _context = context;
+            _mapper = mapper;
+            _hairService = hairService;
         }
 
-        // GET: api/Services
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<Core.Entities.Service>>> GetServices()
-        //{
-        //    return await _context.Services.ToListAsync();
-        //}
+        /// <summary>
+        /// Get all services
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("service")]
+        public async Task<ActionResult<IEnumerable<ServiceDto>>> GetServices()
+        {
+            var hairService = await _hairService.GetServices();
+            if (hairService == null)
+            {
+                return StatusCode(404);
+            }
 
-        // GET: api/Services/5
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<Core.Entities.Service>> GetService(int id)
-        //{
-        //    var service = await _context.Services.FindAsync(id);
+            return StatusCode(200, _mapper.Map<List<ServiceDto>>(hairService));
+        }
 
-        //    if (service == null)
-        //    {
-        //        return NotFound();
-        //    }
+        /// <summary>
+        /// Get hair service by id
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("service/{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var hairService = await _hairService.GetServicesById(id);
+            if (hairService == null)
+            {
+                return StatusCode(404);
+            }
 
-        //    return service;
-        //}
+            return StatusCode(200, _mapper.Map<ServiceDto>(hairService));
+        }
+
 
         // PUT: api/Services/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -65,16 +84,31 @@ namespace HairSalon.Api.Controllers.v1
         //    return NoContent();
         //}
 
-        // POST: api/Services
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPost]
-        //public async Task<ActionResult<Core.Entities.Service>> PostService(Core.Entities.Service service)
-        //{
-        //    _context.Services.Add(service);
-        //    await _context.SaveChangesAsync();
+        [HttpPost("services")]
+        public ActionResult Create(CreateServiceModel createServiceModel)
+        {
+            try
+            {
+                Core.Entities.Service service = new Core.Entities.Service
+                {
+                    Name = createServiceModel.Name,
+                    Description = createServiceModel.Description,
+                    Duration = createServiceModel.Duration,
+                    Price = createServiceModel.Price,
+                };
 
-        //    return CreatedAtAction("GetService", new { id = service.Id }, service);
-        //}
+                _hairService.CreateService(service);
+                return Ok(service);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "An error occurred while creating the service." });
+            }
+        }
 
         // DELETE: api/Services/5
         //[HttpDelete("{id}")]
