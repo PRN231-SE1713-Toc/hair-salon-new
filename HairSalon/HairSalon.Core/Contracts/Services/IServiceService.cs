@@ -12,5 +12,6 @@ namespace HairSalon.Core.Contracts.Services
         Task<List<Service>> GetServices();
         Task<Service> GetServicesById(int id);
         Task<Service> CreateService(Service service);
+        Task<Service> UpdateService(int id, Service service);
     }
 }

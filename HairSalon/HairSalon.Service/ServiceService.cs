@@ -48,12 +48,11 @@ namespace HairSalon.Service
 
                 return service;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await _unitOfWork.RollbackAsync();
                 return null;
             }
-
         }
 
         public async Task<List<Core.Entities.Service>> GetServices()
@@ -66,5 +65,57 @@ namespace HairSalon.Service
         {
             return await _unitOfWork.ServiceRepository.FindByIdAsync(id);
         }
+
+        public async Task<Core.Entities.Service> UpdateService(int id, Core.Entities.Service service)
+        {
+            try
+            {
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            var existingService = await _unitOfWork.ServiceRepository.FindByIdAsync(id);
+            if (existingService == null)
+            {
+                return null;
+            }
+
+            // Update fields
+            existingService.Name = service.Name ?? existingService.Name;
+            existingService.Description = service.Description ?? existingService.Description;
+            existingService.Duration = service.Duration ?? existingService.Duration;
+            existingService.Price = service.Price;
+
+            // Perform validation
+            ValidateService(existingService);
+
+            // Update in the repository
+            _unitOfWork.ServiceRepository.Update(existingService);
+            await _unitOfWork.CommitAsync();
+
+            return existingService;
+        }
+
+        private void ValidateService(Core.Entities.Service service)
+        {
+            if (string.IsNullOrWhiteSpace(service.Name) || service.Name.Length > 100)
+                throw new ArgumentException("Service Name is required and cannot exceed 100 characters.");
+
+            if (!string.IsNullOrEmpty(service.Description) && service.Description.Length > 500)
+                throw new ArgumentException("Description cannot exceed 500 characters.");
+
+            if (!string.IsNullOrEmpty(service.Duration))
+            {
+                var regex = new System.Text.RegularExpressions.Regex(@"^\d{1,3}:\d{2}$");
+                if (!regex.IsMatch(service.Duration))
+                    throw new ArgumentException("Duration must be in the format of HH:mm.");
+            }
+
+            if (service.Price < 0)
+                throw new ArgumentException("Price must be greater than 0.");
+        }   
     }
 }
