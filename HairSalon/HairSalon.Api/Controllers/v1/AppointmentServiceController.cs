@@ -1,20 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HairSalon.Infrastructure;
-using AutoMapper;
+﻿using AutoMapper;
 using HairSalon.Core.Contracts.Services;
-using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Dtos.Requests;
-using HairSalon.Service;
+using HairSalon.Core.Dtos.Responses;
+using HairSalon.Core.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HairSalon.Api.Controllers.v1
 {
-    public class ServicesController : BaseApiController
+    public class ApppointmentServiceController : BaseApiController
     {
         private readonly IMapper _mapper;
-        private readonly IServiceService _hairService;
+        private readonly IAppointmentServiceService _hairService;
 
-        public ServicesController(IMapper mapper, IServiceService hairService)
+        public ApppointmentServiceController(IMapper mapper, IAppointmentServiceService hairService)
         {
             _mapper = mapper;
             _hairService = hairService;
@@ -24,32 +22,32 @@ namespace HairSalon.Api.Controllers.v1
         /// Get all services
         /// </summary>
         /// <returns></returns>
-        [HttpGet("service")]
-        public async Task<ActionResult<IEnumerable<ServiceDto>>> GetServices()
+        [HttpGet("appointment-service")]
+        public async Task<ActionResult<IEnumerable<AppointmentServiceDto>>> GetServices()
         {
-            var hairService = await _hairService.GetServices();
+            var hairService = await _hairService.GetAllServicesAsync();
             if (hairService == null)
             {
                 return StatusCode(404);
             }
 
-            return StatusCode(200, _mapper.Map<List<ServiceDto>>(hairService));
+            return StatusCode(200, _mapper.Map<List<AppointmentServiceDto>>(hairService));
         }
 
         /// <summary>
         /// Get hair service by id
         /// </summary>
         /// <returns></returns>
-        [HttpGet("service/{id}")]
+        [HttpGet("appointment-service/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var hairService = await _hairService.GetServicesById(id);
+            var hairService = await _hairService.GetServiceByIdAsync(id);
             if (hairService == null)
             {
                 return StatusCode(404);
             }
 
-            return StatusCode(200, _mapper.Map<ServiceDto>(hairService));
+            return StatusCode(200, _mapper.Map<AppointmentServiceDto>(hairService));
         }
 
         /// <summary>
@@ -58,19 +56,14 @@ namespace HairSalon.Api.Controllers.v1
         /// <param name="id"></param>
         /// <param name="service"></param>
         /// <returns></returns>
-        [HttpPut()]
-        public async Task<IActionResult> PutService(int id, Core.Entities.Service service)
+        [HttpPut("appointment-service/{id}")]
+        public async Task<ActionResult<AppointmentService>> Update(int id, [FromBody] UpdateAppointmentServiceModel model)
         {
-
             try
             {
-                var updatedService = await _hairService.UpdateService(id, service);
-                if (updatedService == null)
-                {
-                    return NotFound(new { error = "Service not found." });
-                }
-
-                return Ok(updatedService);
+                var service = await _hairService.UpdateServiceAsync(id, model);
+                if (service == null) return NotFound(new { error = "Service not found." });
+                return Ok(service);
             }
             catch (ArgumentException ex)
             {
@@ -82,20 +75,12 @@ namespace HairSalon.Api.Controllers.v1
             }
         }
 
-        [HttpPost("services")]
-        public ActionResult Create(CreateServiceModel createServiceModel)
+        [HttpPost("appointment-service/")]
+        public async Task<IActionResult> Create(CreateAppointmentServiceModel createServiceModel)
         {
             try
             {
-                Core.Entities.Service service = new Core.Entities.Service
-                {
-                    Name = createServiceModel.Name,
-                    Description = createServiceModel.Description,
-                    Duration = createServiceModel.Duration,
-                    Price = createServiceModel.Price,
-                };
-
-                _hairService.CreateService(service);
+                var service = await _hairService.CreateServiceAsync(createServiceModel);
                 return Ok(service);
             }
             catch (ArgumentException ex)
@@ -104,7 +89,7 @@ namespace HairSalon.Api.Controllers.v1
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { error = ex.Message});
+                return StatusCode(500, new { error = ex.Message });
             }
         }
 
@@ -125,3 +110,4 @@ namespace HairSalon.Api.Controllers.v1
         //}
     }
 }
+
