@@ -59,7 +59,7 @@ namespace HairSalon.Api.Controllers.v1
         /// <param name="service"></param>
         /// <returns></returns>
         [HttpPut()]
-        public async Task<IActionResult> PutService(int id, Core.Entities.Service service)
+        public async Task<IActionResult> PutService(int id, UpdateServiceRequest service)
         {
 
             try
@@ -83,7 +83,7 @@ namespace HairSalon.Api.Controllers.v1
         }
 
         [HttpPost("services")]
-        public ActionResult Create(CreateServiceModel createServiceModel)
+        public async Task<IActionResult> Create(CreateServiceModel createServiceModel)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace HairSalon.Api.Controllers.v1
                     Price = createServiceModel.Price,
                 };
 
-                _hairService.CreateService(service);
+                await _hairService.CreateService(service);
                 return Ok(service);
             }
             catch (ArgumentException ex)
