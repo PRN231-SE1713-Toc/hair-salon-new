@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using HairSalon.Core.Enums;
 
 namespace HairSalon.Core.Entities
 {
@@ -17,7 +18,7 @@ namespace HairSalon.Core.Entities
         public string? Method { get; set; }
 
         //TODO: Need to review the return status of payment gateway
-        public int Status { get; set; }
+        public TransactionStatus Status { get; set; }
 
         [Column(TypeName = "decimal(10)")]
         public decimal Amount { get; set; }

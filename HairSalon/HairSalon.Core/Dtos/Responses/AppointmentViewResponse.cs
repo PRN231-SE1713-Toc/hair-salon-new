@@ -11,7 +11,7 @@ namespace HairSalon.Core.Dtos.Responses
 {
     public class AppointmentViewResponse
     {
-        //public int Id { get; set; }
+        public int Id { get; set; }
 
         //public int CustomerId { get; set; }
         public string? CustomerName { get; set; }

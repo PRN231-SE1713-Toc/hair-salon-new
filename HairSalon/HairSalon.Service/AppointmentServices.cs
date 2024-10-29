@@ -87,7 +87,6 @@ namespace HairSalon.Service
             };
             return appointmentViewResponse;
         }
-
         public async Task<List<AppointmentViewResponse>> GetAppointments()
         {
             var list = await _unitOfWork.AppointmentRepository
