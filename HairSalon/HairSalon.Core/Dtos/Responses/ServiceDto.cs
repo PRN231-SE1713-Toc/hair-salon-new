@@ -15,5 +15,6 @@ namespace HairSalon.Core.Dtos.Responses
         public string Description { get; set; } = null!;
         public string? Duration { get; set; }
         public decimal Price { get; set; }
+        public ICollection<AppointmentServiceDto> AppointmentServices { get; set; }
     }
 }

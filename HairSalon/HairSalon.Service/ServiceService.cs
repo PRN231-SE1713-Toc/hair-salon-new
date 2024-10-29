@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HairSalon.Core.Dtos.Responses;
 using Microsoft.EntityFrameworkCore;
+using HairSalon.Core.Dtos.Requests;
 
 namespace HairSalon.Service
 {
@@ -48,55 +49,54 @@ namespace HairSalon.Service
 
                 return service;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await _unitOfWork.RollbackAsync();
-                return null;
+                throw;
             }
         }
 
         public async Task<List<Core.Entities.Service>> GetServices()
         {
-            var services = await _unitOfWork.ServiceRepository.GetAll().AsNoTracking().ToListAsync();
+            var services = await _unitOfWork.ServiceRepository.GetAll().Include(e => e.AppointmentServices).AsNoTracking().ToListAsync();
             return services;
         }
 
         public async Task<Core.Entities.Service> GetServicesById(int id)
         {
-            return await _unitOfWork.ServiceRepository.FindByIdAsync(id);
+            return await _unitOfWork.ServiceRepository.GetAll().Include(e => e.AppointmentServices).AsNoTracking().FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public async Task<Core.Entities.Service> UpdateService(int id, Core.Entities.Service service)
+        public async Task<Core.Entities.Service> UpdateService(int id, UpdateServiceRequest service)
         {
             try
             {
+                var existingService = await _unitOfWork.ServiceRepository.FindByIdAsync(id);
+                if (existingService == null)
+                {
+                    throw new ArgumentException("Service not found");
+                }
 
+                // Update fields
+                existingService.Name = service.Name ?? existingService.Name;
+                existingService.Description = service.Description ?? existingService.Description;
+                existingService.Duration = service.Duration ?? existingService.Duration;
+                existingService.Price = service.Price;
+
+                // Perform validation
+                ValidateService(existingService);
+
+                // Update in the repository
+                _unitOfWork.ServiceRepository.Update(existingService);
+                await _unitOfWork.CommitAsync();
+
+                return existingService;
             }
             catch (Exception)
             {
-
+                await _unitOfWork.RollbackAsync();
                 throw;
             }
-            var existingService = await _unitOfWork.ServiceRepository.FindByIdAsync(id);
-            if (existingService == null)
-            {
-                return null;
-            }
-
-            // Update fields
-            existingService.Name = service.Name ?? existingService.Name;
-            existingService.Description = service.Description ?? existingService.Description;
-            existingService.Duration = service.Duration ?? existingService.Duration;
-            existingService.Price = service.Price;
-
-            // Perform validation
-            ValidateService(existingService);
-
-            // Update in the repository
-            _unitOfWork.ServiceRepository.Update(existingService);
-            await _unitOfWork.CommitAsync();
-
-            return existingService;
         }
 
         private void ValidateService(Core.Entities.Service service)
