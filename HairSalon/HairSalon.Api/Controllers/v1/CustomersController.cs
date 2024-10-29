@@ -14,7 +14,6 @@ namespace HairSalon.Api.Controllers.v1
         [HttpGet("customers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponseModel<List<CustomerResponse>>>> GetCustomers()
         {
             var customers = await _customerService.GetCustomers();

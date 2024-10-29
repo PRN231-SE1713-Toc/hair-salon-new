@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HairSalon.Infrastructure;
 using AutoMapper;
 using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Dtos.Requests;
-using HairSalon.Service;
 
 namespace HairSalon.Api.Controllers.v1
 {
