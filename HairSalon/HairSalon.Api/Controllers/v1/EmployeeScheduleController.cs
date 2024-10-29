@@ -2,17 +2,12 @@
 using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
-using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace HairSalon.Api.Controllers.v1
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class EmployeeScheduleController : ControllerBase
+    public class EmployeeScheduleController : BaseApiController
     {
         private readonly HairSalonDbContext _context;
         private readonly IEmployeeScheduleService _employeeScheduleService;
@@ -24,7 +19,9 @@ namespace HairSalon.Api.Controllers.v1
         }
 
         //GET: api/Schedule
-        [HttpGet]
+        [HttpGet("schedules")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<EmployeeScheduleResponse>>> GetSchedule()
         {
             var schedule =  await _employeeScheduleService.GetSchedule();
@@ -41,8 +38,29 @@ namespace HairSalon.Api.Controllers.v1
             });
         }
 
+        [HttpGet("employee/{id}/schedules")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<EmployeeScheduleResponse>>> GetScheduleOfEmployee(int id)
+        {
+            var schedule = await _employeeScheduleService.GetScheduleOfEmployee(id);
+            if (!schedule.Any()) return NotFound(new ApiResponseModel<string>
+            {
+                StatusCode = System.Net.HttpStatusCode.NotFound,
+                Message = "No customers found!",
+            });
+            return Ok(new ApiResponseModel<List<EmployeeScheduleResponse>>
+            {
+                StatusCode = System.Net.HttpStatusCode.OK,
+                Message = "Fetch data successfully!",
+                Response = schedule
+            });
+        }
+
         //GET: api/Schedule
-        [HttpGet("{id}")]
+        [HttpGet("schedules/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<EmployeeScheduleResponse>> GetSchedule(int id)
         {
             var schedule = await _employeeScheduleService.GetSchedule(id);
@@ -65,7 +83,7 @@ namespace HairSalon.Api.Controllers.v1
         }
 
         //PUT: api/Schedule
-        [HttpPut("{id}")]
+        [HttpPut("schedule/{id}")]
         public async Task<IActionResult> PutSchedule(int id, UpdateEmployeeSchedule employeeSchedule)
         {
             if (id != employeeSchedule.Id)
