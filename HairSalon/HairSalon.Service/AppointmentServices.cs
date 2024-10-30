@@ -75,6 +75,7 @@ namespace HairSalon.Service
             if (result == null) throw new Exception("not found!");
             AppointmentViewResponse appointmentViewResponse = new AppointmentViewResponse
             {
+                Id = id,
                 CustomerName = result.Customer.Name,
                 StylistName = result.Stylist.Name,
                 AppointmentDate = result.AppointmentDate,
