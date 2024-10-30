@@ -64,7 +64,7 @@ namespace HairSalon.Service
             try
             {
                 var _customerRepository = _unitOfWork.CustomerRepository;
-                var user = _customerRepository.FindByIdAsync(userid);
+                var user = _customerRepository.GetAll().Where(e => e.Id == userid).FirstOrDefault();
                 var tick = DateTime.Now.Ticks.ToString();
                 var vnpay = new VnPayLibrary();
                 string payBackUrl = _configuration["VnPay:PaymentBackUrl"] + $"{user.Id}";
@@ -78,7 +78,7 @@ namespace HairSalon.Service
                 vnpay.AddRequestData("vnp_CurrCode", _configuration["VnPay:CurrCode"]);
                 vnpay.AddRequestData("vnp_IpAddr", Utils.GetIpAddress(context));
                 vnpay.AddRequestData("vnp_Locale", _configuration["VnPay:Locale"]);
-                vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang:" + $"OrderId:{model.OrderId},Type:{model.Description},UserID:{user.Id},Anount:{model.Amount}");
+                vnpay.AddRequestData("vnp_OrderInfo", "Thanh toan don hang:" + $"OrderId:{model.OrderId},Type:{model.Description},UserID:{userid},Amount:{model.Amount}");
                 vnpay.AddRequestData("vnp_OrderType", "other"); //default value: other
                 vnpay.AddRequestData("vnp_ReturnUrl", _configuration["VnPay:PaymentBackUrl"]);
                 _logger.LogInformation($"Next mid night: {payBackUrl}.");
@@ -88,7 +88,7 @@ namespace HairSalon.Service
                 TimeZoneInfo timeZone = TimeZoneInfo.Utc;
                 DateTime utcTime = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.Local, timeZone);
                 // Thêm 7 giờ và 15 phút vào thời gian hiện tại
-                DateTime expireTime = utcTime.AddHours(7).AddMinutes(5);
+                DateTime expireTime = utcTime.AddHours(7).AddMinutes(1);
                 // Định dạng thời gian theo yêu cầu
                 string vnp_ExpireDate = expireTime.ToString("yyyyMMddHHmmss");
                 vnpay.AddRequestData("vnp_ExpireDate", vnp_ExpireDate);

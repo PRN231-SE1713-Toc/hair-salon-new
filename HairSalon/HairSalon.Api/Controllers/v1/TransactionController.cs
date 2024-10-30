@@ -21,24 +21,24 @@ namespace HairSalon.Api.Controllers.v1
         /// Create url
         /// </summary>
         [HttpPost("payment/vnpay")]
-        public async Task<IActionResult> AddPayment(int orderId, int userId)
+        public async Task<IActionResult> AddPayment(int appointmentId, int userId)
         {
             var user = await _customerService.GetCustomerById(userId);
-            var order = await _appointmentServices.GetAppointment(orderId);
+            var appointment = await _appointmentServices.GetAppointment(appointmentId);
             try
             {
                 var vnPayModel = new VnPaymentRequestModel()
                 {
-                    Amount = (decimal)order.AppointmentCost,
+                    Amount = (decimal)appointment.AppointmentCost * 100,
                     CreatedDate = DateTime.Now,
                     Description = "thanh toán VnPay",
-                    OrderId = order.Id,
+                    OrderId = appointment.Id,
                 };
                 if (vnPayModel.Amount < 0)
                 {
                     return BadRequest("The amount entered cannot be less than 0. Please try again");
                 }
-                var paymentUrl = _transactionService.CreatePaymentUrl(HttpContext, vnPayModel, userId);
+                var paymentUrl = _transactionService.CreatePaymentUrl(HttpContext, vnPayModel, user.Id);
                 return Ok(new { url = paymentUrl });
                 //return Redirect(_vpnPayServices.CreatePaymentUrl(HttpContext, vnPayModel, userId));
                 //return new JsonResult(_vpnPayServices.CreatePaymentUrl(HttpContext, vnPayModel, userId));               
@@ -74,6 +74,8 @@ namespace HairSalon.Api.Controllers.v1
                 }
             }
 
+            Console.WriteLine("UserID: " + userId + " and AppoinmentId: " + orderId);
+
             //Tạo và lưu trữ thông tin giao dịch
             var paymentDto = new TransactionResponseDTO()
             {
@@ -83,11 +85,10 @@ namespace HairSalon.Api.Controllers.v1
                 Amount = amount,  // Chia cho 100 nếu giá trị 'amount' là theo đơn vị nhỏ nhất của tiền tệ
                 Method = "VnPay",
                 TransactionDate = DateTime.UtcNow.AddHours(7),
-
             };
             var result = await _transactionService.AddPayment(paymentDto);
 
-            if (result == "AddSuccessful")
+            if (result == "Add succesfully")
             {
                 return Redirect("http://localhost:5000/" /*+ userId*/); // thay đổi đường link
             }
