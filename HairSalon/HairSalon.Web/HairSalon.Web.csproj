@@ -6,4 +6,18 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\HairSalon.Core\HairSalon.Core.csproj" />
+	  <ProjectReference Include="..\HairSalon.Infrastructure\HairSalon.Infrastructure.csproj" />
+	  <ProjectReference Include="..\HairSalon.Service\HairSalon.Service.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.6" />
+	</ItemGroup>
+
 </Project>
