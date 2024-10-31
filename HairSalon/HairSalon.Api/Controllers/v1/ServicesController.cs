@@ -1,127 +1,149 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HairSalon.Infrastructure;
 using AutoMapper;
 using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Dtos.Requests;
-using HairSalon.Service;
+using HairSalon.Core.Commons;
+using System.Net;
 
 namespace HairSalon.Api.Controllers.v1
 {
     public class ServicesController : BaseApiController
     {
         private readonly IMapper _mapper;
-        private readonly IServiceService _hairService;
+        private readonly IHairService _hairService;
 
-        public ServicesController(IMapper mapper, IServiceService hairService)
+        public ServicesController(IMapper mapper, IHairService hairService)
         {
             _mapper = mapper;
             _hairService = hairService;
         }
 
         /// <summary>
-        /// Get all services
+        /// Get all hair services
         /// </summary>
         /// <returns></returns>
-        [HttpGet("service")]
-        public async Task<ActionResult<IEnumerable<ServiceDto>>> GetServices()
+        [HttpGet("hair-services")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ApiResponseModel<IList<HairServiceResponse>>>> GetServices()
         {
-            var hairService = await _hairService.GetServices();
-            if (hairService == null)
+            var services = await _hairService.GetHairServices();
+            if (!services.Any())
             {
-                return StatusCode(404);
+                return NotFound(new ApiResponseModel<string>
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = "No services found!"
+                });
             }
 
-            return StatusCode(200, _mapper.Map<List<ServiceDto>>(hairService));
+            return Ok(new ApiResponseModel<IList<HairServiceResponse>>
+            {
+                StatusCode = HttpStatusCode.OK,
+                Message = "Fetch data successfully!",
+                Response = services
+            });
         }
 
         /// <summary>
         /// Get hair service by id
         /// </summary>
+        /// <param name="id">Service's id</param>
         /// <returns></returns>
-        [HttpGet("service/{id}")]
-        public async Task<IActionResult> GetById(int id)
+        [HttpGet("hair-services/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ApiResponseModel<HairServiceResponse>>> GetById(int id)
         {
-            var hairService = await _hairService.GetServicesById(id);
+            var hairService = await _hairService.GetService(id);
             if (hairService == null)
             {
-                return StatusCode(404);
+                return NotFound(new ApiResponseModel<string>
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = "No service found!"
+                });
             }
-
-            return StatusCode(200, _mapper.Map<ServiceDto>(hairService));
+            return StatusCode(200, hairService);
         }
 
         /// <summary>
         /// Update service
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="service"></param>
+        /// <param name="id">Hair service's id</param>
+        /// <param name="request">Updated request model</param>
         /// <returns></returns>
-        [HttpPut()]
-        public async Task<IActionResult> PutService(int id, UpdateServiceRequest service)
+        [HttpPut("hair-service/{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateService(int id, UpdateHairServiceRequest request)
         {
-
-            try
-            {
-                var updatedService = await _hairService.UpdateService(id, service);
-                if (updatedService == null)
+            if (id != request.Id)
+                return BadRequest(new ApiResponseModel<string>
                 {
-                    return NotFound(new { error = "Service not found." });
-                }
-
-                return Ok(updatedService);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { error = ex.Message });
-            }
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Id is not match!"
+                });
+            if (!ModelState.IsValid) return BadRequest();
+            var result = await _hairService.UpdateService(request);
+            if (!result)
+                return BadRequest(new ApiResponseModel<string>
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Cannot update service!"
+                });
+            return NoContent();
         }
 
-        [HttpPost("services")]
-        public async Task<IActionResult> Create(CreateServiceModel createServiceModel)
+        [HttpPost("hair-service")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<ApiResponseModel<string>>> Create(HairServiceRequest request)
         {
-            try
-            {
-                Core.Entities.Service service = new Core.Entities.Service
+            if (!ModelState.IsValid) return BadRequest();
+            var result = await _hairService.CreateService(request);
+            if (!result)
+                return BadRequest(new ApiResponseModel<string>
                 {
-                    Name = createServiceModel.Name,
-                    Description = createServiceModel.Description,
-                    Duration = createServiceModel.Duration,
-                    Price = createServiceModel.Price,
-                };
-
-                await _hairService.CreateService(service);
-                return Ok(service);
-            }
-            catch (ArgumentException ex)
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Cannot create hair service!"
+                });
+            return Ok(new ApiResponseModel<string>
             {
-                return BadRequest(new { error = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { error = ex.Message});
-            }
+                StatusCode = HttpStatusCode.OK,
+                Message = "Success!"
+            });
         }
 
-        // DELETE: api/Services/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteService(int id)
-        //{
-        //    var service = await _context.Services.FindAsync(id);
-        //    if (service == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    _context.Services.Remove(service);
-        //    await _context.SaveChangesAsync();
-
-        //    return NoContent();
-        //}
+        /// <summary>
+        /// Delete hair service
+        /// </summary>
+        /// <param name="id">Service's id</param>
+        /// <returns></returns>
+        [HttpDelete("hair-service/{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteService(int id)
+        {
+            var service = await _hairService.GetServiceById(id);
+            if (service == null)
+            {
+                return NotFound(new ApiResponseModel<string>
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = "No service found!"
+                });
+            }
+            var result = await _hairService.DeleteService(service);
+            if (!result)
+                return BadRequest(new ApiResponseModel<string>
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Cannot delete service!"
+                });
+            return NoContent();
+        }
     }
 }
