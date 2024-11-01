@@ -4,15 +4,7 @@ using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Entities;
-using HairSalon.Infrastructure;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HairSalon.Service
 {
