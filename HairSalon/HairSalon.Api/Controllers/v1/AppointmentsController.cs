@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
 using HairSalon.Core.Contracts.Services;
+using AutoMapper;
+using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Commons;
 using HairSalon.Core.Dtos.Responses;
 
@@ -59,24 +61,22 @@ namespace HairSalon.Api.Controllers.v1
                 });
             }
 
-            return appointment;
+            return Ok(appointment);
         }
 
         //PUT: api/Appointments/5
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAppointment(int id, Appointment appointment)
+        public async Task<IActionResult> PutAppointment(int id, AppointmentUpdateModel appointment)
         {
             if (id != appointment.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(appointment).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                await _appointmentServices.UpdateAppointment(appointment);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -96,12 +96,19 @@ namespace HairSalon.Api.Controllers.v1
         //POST: api/Appointments
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Appointment>> PostAppointment(Appointment appointment)
+        public async Task<ActionResult<Appointment>> PostAppointment(AppointmentCreateModel appointment)
         {
-            _context.Appointments.Add(appointment);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetAppointment", new { id = appointment.Id }, appointment);
+            try
+            {
+                await _appointmentServices.CreateAppointment(appointment);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return NoContent();
+            }
+            var appointments = await _appointmentServices.GetAppointments();
+            AppointmentViewResponse appointmentView =appointments.LastOrDefault();
+            return CreatedAtAction("GetAppointment", new { id = appointmentView.Id }, appointmentView);
         }
 
         //DELETE: api/Appointments/5
@@ -123,7 +130,7 @@ namespace HairSalon.Api.Controllers.v1
 
         private bool AppointmentExists(int id)
         {
-            return _context.Appointments.Any(e => e.Id == id);
+            return _appointmentServices.GetAppointment(id) != null;
         }
     }
 }

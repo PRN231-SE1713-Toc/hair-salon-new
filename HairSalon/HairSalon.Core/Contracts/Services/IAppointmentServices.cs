@@ -14,7 +14,7 @@ namespace HairSalon.Core.Contracts.Services
         Task<List<AppointmentViewResponse>> GetAppointments();
         Task<AppointmentViewResponse?> GetAppointment(int id);
         Task<bool> CreateAppointment(AppointmentCreateModel newAppointment);
-        Task<bool> UpdateAppointment(Appointment updatedAppointment);
+        Task<bool> UpdateAppointment(AppointmentUpdateModel updatedAppointment);
         Task<bool> DeleteAppointment(int id);
     }
 }

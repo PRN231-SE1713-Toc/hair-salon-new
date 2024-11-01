@@ -22,7 +22,8 @@ namespace HairSalon.Service
             try {
                 var appointment = _mapper.Map<Appointment>(newAppointment);
                 _unitOfWork.AppointmentRepository.Add(appointment);
-                //Create AppointmentService
+                
+
                 await _unitOfWork.CommitAsync();
                 return true;
             }
@@ -105,7 +106,7 @@ namespace HairSalon.Service
             return appointments;
         }
 
-        public async Task<bool> UpdateAppointment(Appointment updatedAppointment)
+        public async Task<bool> UpdateAppointment(AppointmentUpdateModel updatedAppointment)
         {
             try {
                 var appointment = await _unitOfWork.AppointmentRepository.FindByIdAsync(updatedAppointment.Id);
@@ -117,17 +118,17 @@ namespace HairSalon.Service
                 _mapper.Map(updatedAppointment, appointment);
                 _unitOfWork.AppointmentRepository.Update(appointment);
                 //Update AppointmentService
-                //if (appointmentServices != null && appointmentServices.Any())
-                //{
-                //    foreach (var service in appointmentServices)
-                //    {
-                //        _unitOfWork.AppointmentServiceRepository.Update(service);  
-                //    }
-                //}
-                //else
-                //{
-                //    return false;
-                //}
+                if (appointmentServices != null && appointmentServices.Any())
+                {
+                    foreach (var service in appointmentServices)
+                    {
+                        _unitOfWork.AppointmentServiceRepository.Update(service);
+                    }
+                }
+                else
+                {
+                    return false;
+                }
                 await _unitOfWork.CommitAsync();
                 return true;
             }

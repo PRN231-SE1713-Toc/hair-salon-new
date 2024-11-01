@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace HairSalon.Core.Dtos.Requests
 {
-    public class AppointmentCreateModel
+    public class AppointmentUpdateModel
     {
-        //public int Id { get; set; }
+        public int Id { get; set; }
         public int CustomerId { get; set; }
 
         public int StylistId { get; set; }
