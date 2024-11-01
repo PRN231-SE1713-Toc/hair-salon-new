@@ -14,7 +14,8 @@ namespace HairSalon.Api.Controllers.v1
         [HttpGet("customers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ApiResponseModel<List<CustomerResponse>>>> GetCustomers()
+        [ProducesErrorResponseType(typeof(ApiResponseModel<string>))]
+        public async Task<ActionResult<List<CustomerResponse>>> GetCustomers()
         {
             var customers = await _customerService.GetCustomers();
             if (!customers.Any()) return NotFound(new ApiResponseModel<string>
@@ -22,12 +23,7 @@ namespace HairSalon.Api.Controllers.v1
                 StatusCode = System.Net.HttpStatusCode.NotFound,
                 Message = "No customers found!",
             });
-            return Ok(new ApiResponseModel<List<CustomerResponse>>
-            {
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Message = "Fetch data successfully!",
-                Response = customers
-            });
+            return Ok(customers);
         }
 
         // GET: api/Customers/5
@@ -47,18 +43,14 @@ namespace HairSalon.Api.Controllers.v1
                 });
             }
 
-            return Ok(new ApiResponseModel<CustomerResponse>
-            {
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Message = "Fetch data successfully!",
-                Response = customer
-            });
+            return Ok(customer);
         }
         
         [HttpPut("customer/{id}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<string>> UpdateCustomer(int id, UpdatedCustomer customer)
+        [ProducesErrorResponseType(typeof(ApiResponseModel<string>))]
+        public async Task<IActionResult> UpdateCustomer(int id, UpdatedCustomer customer)
         {
             if (id != customer.Id)
             {
@@ -77,11 +69,7 @@ namespace HairSalon.Api.Controllers.v1
                     Message = "Failed to update customer!"
                 });
             }
-            return Ok(new ApiResponseModel<string>
-            {
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Message = "Success!"
-            });
+            return NoContent();
         }
         
         [HttpPost("customer")]
@@ -108,7 +96,8 @@ namespace HairSalon.Api.Controllers.v1
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<string>> DeleteCustomer(int id)
+        [ProducesErrorResponseType(typeof(ApiResponseModel<string>))]
+        public async Task<IActionResult> DeleteCustomer(int id)
         {
             var customer = await _customerService.GetCustomerById(id);
             if (customer == null)
@@ -130,11 +119,7 @@ namespace HairSalon.Api.Controllers.v1
                 });
             }
 
-            return Ok(new ApiResponseModel<string>
-            {
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Message = "Success!"
-            });
+            return NoContent();
         }
     }
 }

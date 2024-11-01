@@ -10,7 +10,10 @@ namespace HairSalon.Api.Controllers.v1
         private readonly ICustomerService _customerService;
         private readonly IAppointmentServices _appointmentServices;
 
-        public TransactionController(ITransactionService transactionService, ICustomerService customerService, IAppointmentServices appointmentServices)
+        public TransactionController(
+            ITransactionService transactionService,
+            ICustomerService customerService,
+            IAppointmentServices appointmentServices)
         {
             _transactionService = transactionService;
             _customerService = customerService;
@@ -29,7 +32,7 @@ namespace HairSalon.Api.Controllers.v1
             {
                 var vnPayModel = new VnPaymentRequestModel()
                 {
-                    Amount = (decimal)appointment.AppointmentCost * 100,
+                    Amount = (decimal)appointment.AppointmentCost,
                     CreatedDate = DateTime.Now,
                     Description = "thanh toán VnPay",
                     OrderId = appointment.Id,
@@ -39,9 +42,7 @@ namespace HairSalon.Api.Controllers.v1
                     return BadRequest("The amount entered cannot be less than 0. Please try again");
                 }
                 var paymentUrl = _transactionService.CreatePaymentUrl(HttpContext, vnPayModel, user.Id);
-                return Ok(new { url = paymentUrl });
-                //return Redirect(_vpnPayServices.CreatePaymentUrl(HttpContext, vnPayModel, userId));
-                //return new JsonResult(_vpnPayServices.CreatePaymentUrl(HttpContext, vnPayModel, userId));               
+                return Ok(new { url = paymentUrl });           
             }
             catch (Exception ex)
             {
@@ -82,8 +83,10 @@ namespace HairSalon.Api.Controllers.v1
                 CustomerId = int.Parse(userId),
                 AppointmentId = int.Parse(orderId),
                 Status = "SUCCESS",
-                Amount = amount,  // Chia cho 100 nếu giá trị 'amount' là theo đơn vị nhỏ nhất của tiền tệ
+                Amount = amount,
                 Method = "VnPay",
+                
+                //TODO: Lmao UtcNow là giờ hiện tại display trên máy mà, add thêm 7 lmao lệch giờ transaction
                 TransactionDate = DateTime.UtcNow.AddHours(7),
             };
             var result = await _transactionService.AddPayment(paymentDto);
@@ -94,7 +97,5 @@ namespace HairSalon.Api.Controllers.v1
             }
             return BadRequest("Invalid transaction data.");
         }
-
-
     }
 }

@@ -2,19 +2,16 @@
 using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
-using HairSalon.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HairSalon.Api.Controllers.v1
 {
     public class EmployeeScheduleController : BaseApiController
     {
-        private readonly HairSalonDbContext _context;
         private readonly IEmployeeScheduleService _employeeScheduleService;
 
-        public EmployeeScheduleController(HairSalonDbContext context, IEmployeeScheduleService employeeScheduleService)
+        public EmployeeScheduleController(IEmployeeScheduleService employeeScheduleService)
         {
-            _context = context;
             _employeeScheduleService = employeeScheduleService;
         }
 
@@ -30,12 +27,7 @@ namespace HairSalon.Api.Controllers.v1
                 StatusCode = System.Net.HttpStatusCode.NotFound,
                 Message = "No customers found!",
             });
-            return Ok(new ApiResponseModel<List<EmployeeScheduleResponse>>
-            {
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Message = "Fetch data successfully!",
-                Response = schedule
-            });
+            return Ok(schedule);
         }
 
         [HttpGet("employee/{id}/schedules")]
@@ -49,12 +41,7 @@ namespace HairSalon.Api.Controllers.v1
                 StatusCode = System.Net.HttpStatusCode.NotFound,
                 Message = "No customers found!",
             });
-            return Ok(new ApiResponseModel<List<EmployeeScheduleResponse>>
-            {
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Message = "Fetch data successfully!",
-                Response = schedule
-            });
+            return Ok(schedule);
         }
 
         //GET: api/Schedule
@@ -74,17 +61,15 @@ namespace HairSalon.Api.Controllers.v1
                 });
             }
 
-            return Ok(new ApiResponseModel<EmployeeScheduleResponse>
-            {
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Message = "Fetch data successfully!",
-                Response = schedule
-            });
+            return Ok(schedule);
         }
 
-        //PUT: api/Schedule
+        
         [HttpPut("schedule/{id}")]
-        public async Task<IActionResult> PutSchedule(int id, UpdateEmployeeSchedule employeeSchedule)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesErrorResponseType(typeof(ApiResponseModel<string>))]
+        public async Task<IActionResult> UpdateSchedule(int id, UpdateEmployeeSchedule employeeSchedule)
         {
             if (id != employeeSchedule.Id)
             {
@@ -103,11 +88,7 @@ namespace HairSalon.Api.Controllers.v1
                     Message = "Failed to update schedule!"
                 });
             }
-            return Ok(new ApiResponseModel<string>
-            {
-                StatusCode = System.Net.HttpStatusCode.OK,
-                Message = "Success!"
-            });
+            return NoContent();
         }
     }
 }
