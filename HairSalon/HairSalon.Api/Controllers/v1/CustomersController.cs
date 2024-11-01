@@ -14,7 +14,6 @@ namespace HairSalon.Api.Controllers.v1
         [HttpGet("customers")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<ApiResponseModel<List<CustomerResponse>>>> GetCustomers()
         {
             var customers = await _customerService.GetCustomers();
@@ -55,9 +54,7 @@ namespace HairSalon.Api.Controllers.v1
                 Response = customer
             });
         }
-
-        // PUT: api/Customers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPut("customer/{id}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -86,9 +83,7 @@ namespace HairSalon.Api.Controllers.v1
                 Message = "Success!"
             });
         }
-
-        // POST: api/Customers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPost("customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -108,8 +103,7 @@ namespace HairSalon.Api.Controllers.v1
                 Message = "Success!"
             });
         }
-
-        // DELETE: api/Customers/5
+        
         [HttpDelete("customer/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

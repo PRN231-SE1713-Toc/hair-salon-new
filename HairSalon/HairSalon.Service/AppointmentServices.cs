@@ -4,15 +4,7 @@ using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Entities;
-using HairSalon.Infrastructure;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HairSalon.Service
 {
@@ -76,6 +68,7 @@ namespace HairSalon.Service
             if (result == null) throw new Exception("not found!");
             AppointmentViewResponse appointmentViewResponse = new AppointmentViewResponse
             {
+                Id = id,
                 CustomerName = result.Customer.Name,
                 StylistName = result.Stylist.Name,
                 AppointmentDate = result.AppointmentDate,
@@ -88,7 +81,6 @@ namespace HairSalon.Service
             };
             return appointmentViewResponse;
         }
-
         public async Task<List<AppointmentViewResponse>> GetAppointments()
         {
             var list = await _unitOfWork.AppointmentRepository
