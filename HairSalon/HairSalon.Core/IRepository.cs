@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using HairSalon.Core.Commons;
+using System.Linq.Expressions;
 
 namespace HairSalon.Core
 {
@@ -21,5 +22,6 @@ namespace HairSalon.Core
         void Update(T entity);
 
         void UpdateRange(IEnumerable<T> entities);
+        Task<Pagination<T>> ToPagination(PaginationParameter paginationParameter);
     }
 }

@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using HairSalon.Core;
+using HairSalon.Core.Commons;
 using HairSalon.Core.Contracts.Services;
+using HairSalon.Core.Dtos.PaginationDtos;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
+using HairSalon.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace HairSalon.Service
@@ -78,7 +81,7 @@ namespace HairSalon.Service
 
         public async Task<Core.Entities.Service?> GetServiceById(int id)
             => await _unitOfWork.ServiceRepository.FindByIdAsync(id);
-        
+
         public async Task<bool> UpdateService(UpdateHairServiceRequest request)
         {
             try
@@ -94,6 +97,23 @@ namespace HairSalon.Service
             {
                 await _unitOfWork.RollbackAsync();
                 return false;
+            }
+        }
+        public async Task<Pagination<Core.Entities.Service>> GetHairServiceByFilterAsync(PaginationParameter paginationParameter, ServiceFilterDTO serviceFilterDTO)
+        {
+            try
+            {
+                var services = await _unitOfWork.ServiceRepository.GetServiceByFilterAsync(paginationParameter, serviceFilterDTO);
+                if (services != null)
+                {
+                    var mapperResult = _mapper.Map<List<Core.Entities.Service>>(services);
+                    return new Pagination<Core.Entities.Service>(mapperResult, services.TotalCount, services.CurrentPage, services.PageSize);
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
 
@@ -114,6 +134,6 @@ namespace HairSalon.Service
 
             if (service.Price < 0)
                 throw new ArgumentException("Price must be greater than 0.");
-        }*/   
+        }*/
     }
 }

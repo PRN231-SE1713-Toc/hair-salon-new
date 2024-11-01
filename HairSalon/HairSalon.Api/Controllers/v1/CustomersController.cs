@@ -3,6 +3,8 @@ using HairSalon.Core.Commons;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Requests;
+using HairSalon.Core.Dtos.PaginationDtos;
+using Newtonsoft.Json;
 
 namespace HairSalon.Api.Controllers.v1
 {
@@ -103,7 +105,7 @@ namespace HairSalon.Api.Controllers.v1
                 Message = "Success!"
             });
         }
-        
+
         [HttpDelete("customer/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -135,6 +137,33 @@ namespace HairSalon.Api.Controllers.v1
                 StatusCode = System.Net.HttpStatusCode.OK,
                 Message = "Success!"
             });
+        }
+        [HttpDelete("customer-filter")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetCustomerByFilter([FromQuery] PaginationParameter paginationParameter, [FromQuery] CustomerFilterDTO customerFilterDTO)
+        {
+            try
+            {
+                var result = await _customerService.GetCustomerByFilterAsync(paginationParameter, customerFilterDTO);
+
+                var metadata = new
+                {
+                    result.TotalCount,
+                    result.PageSize,
+                    result.CurrentPage,
+                    result.TotalPages,
+                    result.HasNext,
+                    result.HasPrevious
+                };
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

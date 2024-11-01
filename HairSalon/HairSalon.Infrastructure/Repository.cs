@@ -1,4 +1,5 @@
 ﻿using HairSalon.Core;
+using HairSalon.Core.Commons;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -27,5 +28,16 @@ namespace HairSalon.Infrastructure
         public void Update(T entity) => _dbContext.Update(entity);
 
         public void UpdateRange(IEnumerable<T> entities) => _dbContext.UpdateRange(entities);
+        public async Task<Pagination<T>> ToPagination(PaginationParameter paginationParameter)
+        {
+            var itemCount = await _dbSet.CountAsync();
+            var items = await _dbSet.Skip((paginationParameter.Page - 1) * paginationParameter.Limit)
+                                    .Take(paginationParameter.Limit)
+                                    .AsNoTracking()
+                                    .ToListAsync();
+            var result = new Pagination<T>(items, itemCount, paginationParameter.Page, paginationParameter.Limit);
+
+            return result;
+        }
     }
 }

@@ -5,6 +5,9 @@ using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Commons;
 using System.Net;
+using HairSalon.Core.Dtos.PaginationDtos;
+using HairSalon.Service;
+using Newtonsoft.Json;
 
 namespace HairSalon.Api.Controllers.v1
 {
@@ -144,6 +147,33 @@ namespace HairSalon.Api.Controllers.v1
                     Message = "Cannot delete service!"
                 });
             return NoContent();
+        }
+        [HttpDelete("hair-service-filter")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetHairServiceByFilter([FromQuery] PaginationParameter paginationParameter, [FromQuery] ServiceFilterDTO serviceFilterDTO)
+        {
+            try
+            {
+                var result = await _hairService.GetHairServiceByFilterAsync(paginationParameter, serviceFilterDTO);
+
+                var metadata = new
+                {
+                    result.TotalCount,
+                    result.PageSize,
+                    result.CurrentPage,
+                    result.TotalPages,
+                    result.HasNext,
+                    result.HasPrevious
+                };
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
