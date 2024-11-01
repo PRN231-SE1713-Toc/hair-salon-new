@@ -11,6 +11,7 @@ namespace HairSalon.Core.Dtos.Requests
 {
     public class AppointmentCreateModel
     {
+        //public int Id { get; set; }
         public int CustomerId { get; set; }
 
         public int StylistId { get; set; }

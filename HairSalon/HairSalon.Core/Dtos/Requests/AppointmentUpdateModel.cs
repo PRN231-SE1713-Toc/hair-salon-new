@@ -7,17 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HairSalon.Core.Dtos.Responses
+namespace HairSalon.Core.Dtos.Requests
 {
-    public class AppointmentViewResponse
+    public class AppointmentUpdateModel
     {
         public int Id { get; set; }
+        public int CustomerId { get; set; }
 
-        //public int CustomerId { get; set; }
-        public string? CustomerName { get; set; }
-
-        //public int StylistId { get; set; }
-        public string? StylistName { get; set; }
+        public int StylistId { get; set; }
 
         public DateOnly AppointmentDate { get; set; }
 
@@ -32,6 +29,6 @@ namespace HairSalon.Core.Dtos.Responses
 
         public ICollection<AppointmentService> AppointmentServices { get; set; } = new List<AppointmentService>();
 
-        public decimal? AppointmentCost { get; set; }
+        //public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
     }
 }
