@@ -85,7 +85,6 @@ namespace HairSalon.Api.Extensions
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IHairService, HairService>();
             services.AddScoped<IEmployeeScheduleService, EmployeeScheduleService>();
-            services.AddScoped<IAppointmentServiceService, AppointmentServiceService>();
             services.AddScoped<IAppointmentServices, AppointmentServices>();
             services.AddScoped<ITransactionService, TransactionService>();
 

@@ -2,34 +2,61 @@
 using Microsoft.EntityFrameworkCore;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
+using HairSalon.Core.Contracts.Services;
+using HairSalon.Core.Commons;
+using HairSalon.Core.Dtos.Responses;
 
 namespace HairSalon.Api.Controllers.v1
 {
     public class AppointmentsController : BaseApiController
     {
         private readonly HairSalonDbContext _context;
+        private readonly IAppointmentServices _appointmentServices;
 
-        public AppointmentsController(HairSalonDbContext context)
+        public AppointmentsController(HairSalonDbContext context, IAppointmentServices appointmentServices)
         {
             _context = context;
+            _appointmentServices = appointmentServices;
         }
 
-       //GET: api/Appointments
-       [HttpGet]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAppointments()
+       /// <summary>
+       /// Get appointments
+       /// </summary>
+       /// <returns></returns>
+       [HttpGet("appointments")]
+       [ProducesResponseType(StatusCodes.Status200OK)]
+       [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<List<AppointmentViewResponse>>> GetAppointments()
         {
-            return await _context.Appointments.ToListAsync();
+            var appointments = await _appointmentServices.GetAppointments();
+            if (!appointments.Any())
+                return NotFound(new ApiResponseModel<string>
+                {
+                    StatusCode = System.Net.HttpStatusCode.NotFound,
+                    Message = "No appointments!"
+                });
+            return Ok(appointments);
         }
 
-        //GET: api/Appointments/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Appointment>> GetAppointment(int id)
+        /// <summary>
+        /// Get appointment by id
+        /// </summary>
+        /// <param name="id">Appointment's id</param>
+        /// <returns></returns>
+        [HttpGet("appointments/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AppointmentViewResponse>> GetAppointment(int id)
         {
-            var appointment = await _context.Appointments.FindAsync(id);
+            var appointment = await _appointmentServices.GetAppointment(id);
 
             if (appointment == null)
             {
-                return NotFound();
+                return NotFound(new ApiResponseModel<string>
+                {
+                    StatusCode = System.Net.HttpStatusCode.OK,
+                    Message = "Appointment not found!"
+                });
             }
 
             return appointment;
@@ -78,17 +105,18 @@ namespace HairSalon.Api.Controllers.v1
         }
 
         //DELETE: api/Appointments/5
-        [HttpDelete("{id}")]
+        [HttpDelete("appointment/{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteAppointment(int id)
         {
-            var appointment = await _context.Appointments.FindAsync(id);
-            if (appointment == null)
-            {
-                return NotFound();
-            }
-
-            _context.Appointments.Remove(appointment);
-            await _context.SaveChangesAsync();
+            var result = await _appointmentServices.DeleteAppointment(id);
+            if (!result)
+                return BadRequest(new ApiResponseModel<string>
+                {
+                    StatusCode = System.Net.HttpStatusCode.BadRequest,
+                    Message = "Cannot update appointment. Operation failed!"
+                });
 
             return NoContent();
         }
