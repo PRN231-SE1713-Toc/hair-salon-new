@@ -15,6 +15,8 @@ namespace HairSalon.Core.Dtos.Responses
 
         public int ServiceId { get; set; }
 
+        public string? ServiceName { get; set; }
+
         [Column(TypeName = "decimal(10)")]
         public decimal CurrentPrice { get; set; }
     }

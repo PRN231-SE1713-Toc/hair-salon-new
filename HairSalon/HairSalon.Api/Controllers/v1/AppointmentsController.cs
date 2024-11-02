@@ -31,12 +31,14 @@ namespace HairSalon.Api.Controllers.v1
         public async Task<ActionResult<List<AppointmentViewResponse>>> GetAppointments()
         {
             var appointments = await _appointmentServices.GetAppointments();
+
             if (!appointments.Any())
                 return NotFound(new ApiResponseModel<string>
                 {
                     StatusCode = System.Net.HttpStatusCode.NotFound,
                     Message = "No appointments!"
                 });
+
             return Ok(appointments);
         }
 
@@ -56,7 +58,7 @@ namespace HairSalon.Api.Controllers.v1
             {
                 return NotFound(new ApiResponseModel<string>
                 {
-                    StatusCode = System.Net.HttpStatusCode.OK,
+                    StatusCode = System.Net.HttpStatusCode.NotFound,
                     Message = "Appointment not found!"
                 });
             }
@@ -71,7 +73,12 @@ namespace HairSalon.Api.Controllers.v1
         {
             if (id != appointment.Id)
             {
-                return BadRequest();
+                return BadRequest(new ApiResponseModel<string>
+                {
+                    StatusCode = System.Net.HttpStatusCode.BadRequest,
+                    Message = "id is not the same"
+                }
+                    );
             }
 
             try
@@ -82,7 +89,11 @@ namespace HairSalon.Api.Controllers.v1
             {
                 if (!AppointmentExists(id))
                 {
-                    return NotFound();
+                    return NotFound(new ApiResponseModel<string>
+                    {
+                        StatusCode = System.Net.HttpStatusCode.NotFound,
+                        Message = "Not found with id" + id
+                    });
                 }
                 else
                 {

@@ -13,10 +13,12 @@ namespace HairSalon.Core.Dtos.Responses
     {
         public int Id { get; set; }
 
-        //public int CustomerId { get; set; }
+        public int CustomerId { get; set; }
+
         public string? CustomerName { get; set; }
 
-        //public int StylistId { get; set; }
+        public int StylistId { get; set; }
+
         public string? StylistName { get; set; }
 
         public DateOnly AppointmentDate { get; set; }
@@ -28,9 +30,9 @@ namespace HairSalon.Core.Dtos.Responses
         [StringLength(255)]
         public string? Note { get; set; }
 
-        public AppointmentStatus AppointmentStatus { get; set; }
+        public string AppointmentStatus { get; set; }
 
-        public ICollection<AppointmentService> AppointmentServices { get; set; } = new List<AppointmentService>();
+        public IEnumerable<AppointmentServiceDto> AppointmentServices { get; set; } = new List<AppointmentServiceDto>();
 
         public decimal? AppointmentCost { get; set; }
     }

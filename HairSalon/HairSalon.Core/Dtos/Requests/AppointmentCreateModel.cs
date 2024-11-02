@@ -27,7 +27,7 @@ namespace HairSalon.Core.Dtos.Requests
 
         public AppointmentStatus AppointmentStatus { get; set; }
 
-        public ICollection<AppointmentService> AppointmentServices { get; set; } = new List<AppointmentService>();
+        public ICollection<CreateAppointmentServiceModel> AppointmentServices { get; set; } = new List<CreateAppointmentServiceModel>();
 
         //public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
     }
