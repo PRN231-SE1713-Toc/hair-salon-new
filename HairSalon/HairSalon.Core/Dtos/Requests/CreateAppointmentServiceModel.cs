@@ -8,7 +8,6 @@ namespace HairSalon.Core.Dtos.Requests
 {
     public class CreateAppointmentServiceModel
     {
-        public int AppointmentId { get; set; }
         public int ServiceId { get; set; }
         public decimal CurrentPrice { get; set; }
     }

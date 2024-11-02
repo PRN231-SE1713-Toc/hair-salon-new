@@ -21,8 +21,29 @@ namespace HairSalon.Service
         {
             try {
                 var appointment = _mapper.Map<Appointment>(newAppointment);
+
+                //add Appointment
                 _unitOfWork.AppointmentRepository.Add(appointment);
-                
+
+                //add AppointmentService
+                var newAppointmentId = (await _unitOfWork.AppointmentRepository.GetAll().LastOrDefaultAsync()).Id;
+                if (newAppointment.AppointmentServices != null && newAppointment.AppointmentServices.Any())
+                {
+                    foreach (var service in newAppointment.AppointmentServices)
+                    {
+                        AppointmentService appointmentService = new AppointmentService{
+                            AppointmentId = newAppointmentId,
+                            ServiceId = service.ServiceId,
+                            CurrentPrice = service.CurrentPrice
+                        };
+                        _unitOfWork.AppointmentServiceRepository.Add(appointmentService);
+                    }
+                }
+                else
+                {
+                    await _unitOfWork.RollbackAsync();
+                    return false;
+                }
 
                 await _unitOfWork.CommitAsync();
                 return true;
@@ -36,7 +57,7 @@ namespace HairSalon.Service
         public async Task<bool> DeleteAppointment(int id)
         {
             try {
-                var result = await _unitOfWork.AppointmentRepository
+                var appointment = await _unitOfWork.AppointmentRepository
                 .GetAll()
                 .Where(a => a.Id == id)
                 .Include(a => a.Customer)
@@ -45,7 +66,20 @@ namespace HairSalon.Service
                 .Include(a => a.Transactions)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
-                //Delete AppointmentServices
+
+                if (appointment == null)
+                    return false;
+
+                // Delete AppointmentServices
+                foreach (var service in appointment.AppointmentServices)
+                {
+                    _unitOfWork.AppointmentServiceRepository.Delete(service);
+                }
+
+                // Delete Appointment
+                _unitOfWork.AppointmentRepository.Delete(appointment);
+
+                await _unitOfWork.CommitAsync();
                 return true;
             }
             catch {
@@ -65,18 +99,35 @@ namespace HairSalon.Service
                 .Include(a => a.Transactions)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
-            if (result == null) throw new Exception("not found!");
+
+            //Not found
+            if (result == null) return null;
+
+            var appointmentServices = await Task.WhenAll(result.AppointmentServices.Select(async res =>
+            {
+                var service = await _unitOfWork.ServiceRepository.FindByIdAsync(res.ServiceId);
+                return new AppointmentServiceDto
+                {
+                    Id = res.Id,
+                    AppointmentId = res.AppointmentId,
+                    ServiceId = res.ServiceId,
+                    ServiceName = service?.Name ?? null,
+                    CurrentPrice = res.CurrentPrice
+                };
+            }));
             AppointmentViewResponse appointmentViewResponse = new AppointmentViewResponse
             {
                 Id = id,
+                CustomerId = result.CustomerId,
                 CustomerName = result.Customer.Name,
+                StylistId = result.StylistId,
                 StylistName = result.Stylist.Name,
                 AppointmentDate = result.AppointmentDate,
                 StartTime = result.StartTime,
                 EndTime = result.EndTime,
                 Note = result.Note,
-                AppointmentStatus = result.AppointmentStatus,
-                AppointmentServices = result.AppointmentServices,
+                AppointmentStatus = result.AppointmentStatus.ToString(),
+                AppointmentServices = appointmentServices,
                 AppointmentCost = result.AppointmentServices.Sum(a => a.CurrentPrice)
             };
             return appointmentViewResponse;
@@ -90,19 +141,35 @@ namespace HairSalon.Service
                 .Include (a => a.AppointmentServices)
                 .AsNoTracking()
                 .ToListAsync();
-            if (list == null) { throw new Exception("not found"); }
+
+            //No record
+            if (list == null) return new List<AppointmentViewResponse>();
+
+            var services = await _unitOfWork.ServiceRepository.GetAll().ToListAsync();
+
             var appointments = list.Select(result => new AppointmentViewResponse
             {
+                Id = result.Id,
+                CustomerId = result.CustomerId,
                 CustomerName = result.Customer.Name,
+                StylistId = result.StylistId,
                 StylistName = result.Stylist.Name,
                 AppointmentDate = result.AppointmentDate,
                 StartTime = result.StartTime,
                 EndTime = result.EndTime,
                 Note = result.Note,
-                AppointmentStatus = result.AppointmentStatus,
-                AppointmentServices = result.AppointmentServices,
+                AppointmentStatus = result.AppointmentStatus.ToString(),
+                AppointmentServices = result.AppointmentServices.Select(res => new AppointmentServiceDto
+                {
+                    Id = res.Id,
+                    AppointmentId = res.AppointmentId,
+                    ServiceId = res.ServiceId,
+                    ServiceName = services.FirstOrDefault(s => s.Id == res.ServiceId)?.Name ?? null,
+                    CurrentPrice = res.CurrentPrice,
+                }),
                 AppointmentCost = result.AppointmentServices.Sum(a => a.CurrentPrice)
             }).ToList();
+
             return appointments;
         }
 
@@ -114,6 +181,7 @@ namespace HairSalon.Service
                     .GetAll()
                     .Where(s => s.AppointmentId == updatedAppointment.Id)
                     .ToListAsync();
+                //Update Appointment
                 if (appointment == null) { return false; }
                 _mapper.Map(updatedAppointment, appointment);
                 _unitOfWork.AppointmentRepository.Update(appointment);
