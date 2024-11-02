@@ -29,7 +29,7 @@ namespace HairSalon.Api.Controllers.v1
         [HttpGet("hair-services")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ApiResponseModel<IList<HairServiceResponse>>>> GetServices()
+        public async Task<ActionResult<IList<HairServiceResponse>>> GetServices()
         {
             var services = await _hairService.GetHairServices();
             if (!services.Any())
@@ -41,12 +41,7 @@ namespace HairSalon.Api.Controllers.v1
                 });
             }
 
-            return Ok(new ApiResponseModel<IList<HairServiceResponse>>
-            {
-                StatusCode = HttpStatusCode.OK,
-                Message = "Fetch data successfully!",
-                Response = services
-            });
+            return Ok(services);
         }
 
         /// <summary>
@@ -57,7 +52,7 @@ namespace HairSalon.Api.Controllers.v1
         [HttpGet("hair-services/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ApiResponseModel<HairServiceResponse>>> GetById(int id)
+        public async Task<ActionResult<HairServiceResponse>> GetById(int id)
         {
             var hairService = await _hairService.GetService(id);
             if (hairService == null)
