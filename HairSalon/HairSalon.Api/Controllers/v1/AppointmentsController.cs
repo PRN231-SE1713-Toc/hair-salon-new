@@ -75,7 +75,7 @@ namespace HairSalon.Api.Controllers.v1
             {
                 string mess = await _appointmentServices.UpdateAppointment(appointment);
 
-                if (mess == "new appointment updated successfully")
+                if (mess == "Appointment updated successfully")
                 {
                     var appointments = await _appointmentServices.GetAppointments();
                     AppointmentViewResponse appointmentView = appointments.LastOrDefault();
