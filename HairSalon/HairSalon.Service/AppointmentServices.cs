@@ -4,7 +4,9 @@ using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Entities;
+using HairSalon.Core.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace HairSalon.Service
 {
@@ -17,44 +19,70 @@ namespace HairSalon.Service
         private readonly IMapper _mapper = mapper;
         private readonly ITokenService _tokenService = tokenService;
 
-        public async Task<bool> CreateAppointment(AppointmentCreateModel newAppointment)
+        public async Task<string> CreateAppointment(AppointmentCreateModel newAppointment)
         {
             try {
-                var appointment = _mapper.Map<Appointment>(newAppointment);
+                //check valid
+                if (newAppointment == null) 
+                    return "new appointment must not be empty";
+                if (newAppointment.CustomerId <= 0) 
+                    return "Customer Id must be greater than 0";
+                if (newAppointment.StylistId <= 0) 
+                    return "Stylist Id must be grater than 0";
+                if (newAppointment.AppointmentDate <= DateOnly.FromDateTime(DateTime.Now)) 
+                    return "Booking date must be in the future";
+                if (newAppointment.EndTime <= newAppointment.StartTime) 
+                    return "EndTime must not before StartTime";
+                if (newAppointment.AppointmentStatus < 0 ||
+                    (int)newAppointment.AppointmentStatus > Enum.GetValues(typeof(AppointmentStatus)).Length)
+                    return "Appointment status must equal or greater than 0 and less than " 
+                        + Enum.GetValues(typeof(AppointmentStatus)).Length;
+                if (newAppointment.AppointmentServices.Count == 0)
+                    return "Service list must not be empty";
+                var Services = new List<AppointmentService>();
+                foreach (var appointmentService in newAppointment.AppointmentServices)
+                {
+                    var service = await _unitOfWork.ServiceRepository.FindByIdAsync(appointmentService.ServiceId);
+                    if (service == null) return "service id " + appointmentService.ServiceId + " is not found";
+                    Services.Add(new AppointmentService()
+                    {
+                        ServiceId = service.Id,
+                        CurrentPrice = service.Price,
+                    });
+                }
 
                 //add Appointment
+                Appointment appointment = new Appointment()
+                {
+                    CustomerId = newAppointment.CustomerId,
+                    StylistId = newAppointment.StylistId,
+                    AppointmentDate = newAppointment.AppointmentDate,
+                    StartTime = newAppointment.StartTime,
+                    EndTime = newAppointment.EndTime,
+                    Note = newAppointment.Note,
+                    AppointmentStatus = newAppointment.AppointmentStatus,
+                };
                 _unitOfWork.AppointmentRepository.Add(appointment);
 
+                await _unitOfWork.CommitAsync();
+
                 //add AppointmentService
-                var newAppointmentId = (await _unitOfWork.AppointmentRepository.GetAll().LastOrDefaultAsync()).Id;
-                if (newAppointment.AppointmentServices != null && newAppointment.AppointmentServices.Any())
+                foreach (var service in Services)
                 {
-                    foreach (var service in newAppointment.AppointmentServices)
-                    {
-                        AppointmentService appointmentService = new AppointmentService{
-                            AppointmentId = newAppointmentId,
-                            ServiceId = service.ServiceId,
-                            CurrentPrice = service.CurrentPrice
-                        };
-                        _unitOfWork.AppointmentServiceRepository.Add(appointmentService);
-                    }
-                }
-                else
-                {
-                    await _unitOfWork.RollbackAsync();
-                    return false;
+                    service.AppointmentId = appointment.Id;
+                    _unitOfWork.AppointmentServiceRepository.Add(service);
                 }
 
                 await _unitOfWork.CommitAsync();
-                return true;
+                return "new appointment added successfully";
             }
-            catch {
+            catch (Exception e) {
                 await _unitOfWork.RollbackAsync();
-                return false;
+                return e.Message;
             }
         }
 
-        public async Task<bool> DeleteAppointment(int id)
+        public async Task<string> DeleteAppointment(int id)
         {
             try {
                 var appointment = await _unitOfWork.AppointmentRepository
@@ -68,7 +96,7 @@ namespace HairSalon.Service
                 .FirstOrDefaultAsync();
 
                 if (appointment == null)
-                    return false;
+                    return "Can not find appointment with id " + id;
 
                 // Delete AppointmentServices
                 foreach (var service in appointment.AppointmentServices)
@@ -80,11 +108,11 @@ namespace HairSalon.Service
                 _unitOfWork.AppointmentRepository.Delete(appointment);
 
                 await _unitOfWork.CommitAsync();
-                return true;
+                return "Deleted successfully";
             }
-            catch {
+            catch (Exception e) {
                 await _unitOfWork.RollbackAsync();
-                return false;
+                return e.Message;
             }
         }
 
@@ -173,36 +201,70 @@ namespace HairSalon.Service
             return appointments;
         }
 
-        public async Task<bool> UpdateAppointment(AppointmentUpdateModel updatedAppointment)
+        public async Task<string> UpdateAppointment(AppointmentUpdateModel updatedAppointment)
         {
             try {
-                var appointment = await _unitOfWork.AppointmentRepository.FindByIdAsync(updatedAppointment.Id);
-                var appointmentServices = await _unitOfWork.AppointmentServiceRepository
-                    .GetAll()
-                    .Where(s => s.AppointmentId == updatedAppointment.Id)
-                    .ToListAsync();
-                //Update Appointment
-                if (appointment == null) { return false; }
-                _mapper.Map(updatedAppointment, appointment);
-                _unitOfWork.AppointmentRepository.Update(appointment);
-                //Update AppointmentService
-                if (appointmentServices != null && appointmentServices.Any())
+                //check valid
+                if (updatedAppointment.Id <= 0)
+                    return "Id must greater than 0";
+                Appointment appointment = await _unitOfWork.AppointmentRepository.FindByIdAsync(updatedAppointment.Id);
+                if (appointment == null) 
+                    return "Can not find Appointment with id " + updatedAppointment.Id;
+                if (updatedAppointment == null)
+                    return "new appointment must not be empty";
+                if (updatedAppointment.CustomerId <= 0)
+                    return "Customer Id must be greater than 0";
+                if (updatedAppointment.StylistId <= 0)
+                    return "Stylist Id must be grater than 0";
+                if (updatedAppointment.AppointmentDate <= DateOnly.FromDateTime(DateTime.Now))
+                    return "Booking date must be in the future";
+                if (updatedAppointment.EndTime <= updatedAppointment.StartTime)
+                    return "EndTime must not before StartTime";
+                if (updatedAppointment.AppointmentStatus < 0 ||
+                    (int) updatedAppointment.AppointmentStatus > Enum.GetValues(typeof(AppointmentStatus)).Length)
+                    return "Appointment status must equal or greater than 0 and less than "
+                        + Enum.GetValues(typeof(AppointmentStatus)).Length;
+                if (updatedAppointment.AppointmentServices.Count == 0)
+                    return "Service list must not be empty";
+                var Services = new List<AppointmentService>();
+                foreach (var appointmentService in updatedAppointment.AppointmentServices)
                 {
-                    foreach (var service in appointmentServices)
+                    var service = await _unitOfWork.ServiceRepository.FindByIdAsync(appointmentService.ServiceId);
+                    if (service == null) return "service id " + appointmentService.ServiceId + " is not found";
+                    Services.Add(new AppointmentService()
                     {
-                        _unitOfWork.AppointmentServiceRepository.Update(service);
-                    }
+                        ServiceId = service.Id,
+                        CurrentPrice = appointmentService.CurrentPrice,
+                    });
                 }
-                else
+
+                //update Appointment
+                appointment = new Appointment()
                 {
-                    return false;
+                    Id = updatedAppointment.Id,
+                    CustomerId = updatedAppointment.CustomerId,
+                    StylistId = updatedAppointment.StylistId,
+                    AppointmentDate = updatedAppointment.AppointmentDate,
+                    StartTime = updatedAppointment.StartTime,
+                    EndTime = updatedAppointment.EndTime,
+                    Note = updatedAppointment.Note,
+                    AppointmentStatus = updatedAppointment.AppointmentStatus,
+                };
+                _unitOfWork.AppointmentRepository.Update(appointment);
+
+                //add AppointmentService
+                foreach (var service in Services)
+                {
+                    _unitOfWork.AppointmentServiceRepository.Update(service);
                 }
+
                 await _unitOfWork.CommitAsync();
-                return true;
+                return "Appointment updated successfully";
             }
-            catch (Exception e) {
-                await _unitOfWork.CommitAsync();
-                return false;
+            catch (Exception e)
+            {
+                await _unitOfWork.RollbackAsync();
+                return e.Message;
             }
         }
     }
