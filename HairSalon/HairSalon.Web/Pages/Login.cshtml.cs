@@ -18,10 +18,10 @@ namespace HairSalon.Web.Pages
             _httpContextAccessor = httpContextAccessor;
         }
 
-        //public IActionResult OnGet()
-        //{
-        //    return Page();
-        //}
+        public IActionResult OnGet()
+        {
+            return Page();
+        }
 
         [BindProperty]
         public AuthRequestModel AuthRequest { get; set; } = default!;
