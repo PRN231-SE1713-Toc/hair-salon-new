@@ -66,9 +66,8 @@ namespace HairSalon.Api.Controllers.v1
             return Ok(appointment);
         }
 
-        //PUT: api/Appointments/5
-        //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        // TODO: Change the action result of this endpoint, return Ok with the message or NoContent
+        [HttpPut("appointment/{id}")]
         public async Task<IActionResult> PutAppointment(AppointmentUpdateModel appointment)
         {
             try
@@ -92,10 +91,9 @@ namespace HairSalon.Api.Controllers.v1
                 return NoContent();
             }
         }
-
-        //POST: api/Appointments
-        //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        
+        // TODO: Change the action result of this endpoint, return Ok with the message or NoContent
+        [HttpPost("appointment")]
         public async Task<ActionResult<Appointment>> PostAppointment(AppointmentCreateModel appointment)
         {
             try
@@ -119,8 +117,8 @@ namespace HairSalon.Api.Controllers.v1
                 return NoContent();
             }
         }
-
-        //DELETE: api/Appointments/5
+        
+        // TODO: Change the action result of this endpoint, return Ok with the message or NoContent
         [HttpDelete("appointment/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

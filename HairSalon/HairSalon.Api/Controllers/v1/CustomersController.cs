@@ -123,32 +123,34 @@ namespace HairSalon.Api.Controllers.v1
 
             return NoContent();
         }
-        [HttpDelete("customer-filter")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetCustomerByFilter([FromQuery] PaginationParameter paginationParameter, [FromQuery] CustomerFilterDTO customerFilterDTO)
-        {
-            try
-            {
-                var result = await _customerService.GetCustomerByFilterAsync(paginationParameter, customerFilterDTO);
 
-                var metadata = new
-                {
-                    result.TotalCount,
-                    result.PageSize,
-                    result.CurrentPage,
-                    result.TotalPages,
-                    result.HasNext,
-                    result.HasPrevious
-                };
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        // TODO: ?
+        //[HttpDelete("customer-filter")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public async Task<IActionResult> GetCustomerByFilter([FromQuery] PaginationParameter paginationParameter, [FromQuery] CustomerFilterDTO customerFilterDTO)
+        //{
+        //    try
+        //    {
+        //        var result = await _customerService.GetCustomerByFilterAsync(paginationParameter, customerFilterDTO);
+
+        //        var metadata = new
+        //        {
+        //            result.TotalCount,
+        //            result.PageSize,
+        //            result.CurrentPage,
+        //            result.TotalPages,
+        //            result.HasNext,
+        //            result.HasPrevious
+        //        };
+        //        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+        //        return Ok(result);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
     }
 }
