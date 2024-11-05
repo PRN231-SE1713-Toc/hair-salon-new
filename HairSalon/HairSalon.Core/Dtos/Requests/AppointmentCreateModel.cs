@@ -12,21 +12,31 @@ namespace HairSalon.Core.Dtos.Requests
     public class AppointmentCreateModel
     {
         //public int Id { get; set; }
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage ="Customer Id must greater than 0")]
         public int CustomerId { get; set; }
 
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Stylist Id must greater than 0")]
         public int StylistId { get; set; }
 
+        [Required]
+        [DataType(DataType.Date)]
         public DateOnly AppointmentDate { get; set; }
 
+        [Required]
         public TimeOnly StartTime { get; set; }
 
+        [Required]
         public TimeOnly EndTime { get; set; }
 
         [StringLength(255)]
         public string? Note { get; set; }
 
+        [Required]
         public AppointmentStatus AppointmentStatus { get; set; }
 
+        [Required]
         public ICollection<CreateAppointmentServiceModel> AppointmentServices { get; set; } = new List<CreateAppointmentServiceModel>();
 
         //public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();

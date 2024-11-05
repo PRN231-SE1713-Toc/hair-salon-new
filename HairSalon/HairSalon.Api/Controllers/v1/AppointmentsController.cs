@@ -69,39 +69,28 @@ namespace HairSalon.Api.Controllers.v1
         //PUT: api/Appointments/5
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAppointment(int id, AppointmentUpdateModel appointment)
+        public async Task<IActionResult> PutAppointment(AppointmentUpdateModel appointment)
         {
-            if (id != appointment.Id)
+            try
             {
+                string mess = await _appointmentServices.UpdateAppointment(appointment);
+
+                if (mess == "new appointment updated successfully")
+                {
+                    var appointments = await _appointmentServices.GetAppointments();
+                    AppointmentViewResponse appointmentView = appointments.LastOrDefault();
+                    return CreatedAtAction("GetAppointment", new { id = appointmentView.Id }, appointmentView);
+                }
                 return BadRequest(new ApiResponseModel<string>
                 {
                     StatusCode = System.Net.HttpStatusCode.BadRequest,
-                    Message = "id is not the same"
-                }
-                    );
-            }
-
-            try
-            {
-                await _appointmentServices.UpdateAppointment(appointment);
+                    Message = mess
+                });
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!AppointmentExists(id))
-                {
-                    return NotFound(new ApiResponseModel<string>
-                    {
-                        StatusCode = System.Net.HttpStatusCode.NotFound,
-                        Message = "Not found with id" + id
-                    });
-                }
-                else
-                {
-                    throw;
-                }
+                return NoContent();
             }
-
-            return NoContent();
         }
 
         //POST: api/Appointments
@@ -111,15 +100,24 @@ namespace HairSalon.Api.Controllers.v1
         {
             try
             {
-                await _appointmentServices.CreateAppointment(appointment);
+                string mess = await _appointmentServices.CreateAppointment(appointment);
+
+                if (mess == "new appointment added successfully")
+                {
+                    var appointments = await _appointmentServices.GetAppointments();
+                    AppointmentViewResponse appointmentView = appointments.LastOrDefault();
+                    return CreatedAtAction("GetAppointment", new { id = appointmentView.Id }, appointmentView);
+                }
+                return BadRequest(new ApiResponseModel<string>
+                {
+                    StatusCode = System.Net.HttpStatusCode.BadRequest,
+                    Message = mess
+                });
             }
             catch (DbUpdateConcurrencyException)
             {
                 return NoContent();
             }
-            var appointments = await _appointmentServices.GetAppointments();
-            AppointmentViewResponse appointmentView =appointments.LastOrDefault();
-            return CreatedAtAction("GetAppointment", new { id = appointmentView.Id }, appointmentView);
         }
 
         //DELETE: api/Appointments/5
@@ -128,20 +126,26 @@ namespace HairSalon.Api.Controllers.v1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteAppointment(int id)
         {
-            var result = await _appointmentServices.DeleteAppointment(id);
-            if (!result)
+            try
+            {
+                string mess = await _appointmentServices.DeleteAppointment(id);
+
+                if (mess == "Deleted successfully")
+                {
+                    var appointments = await _appointmentServices.GetAppointments();
+                    AppointmentViewResponse appointmentView = appointments.LastOrDefault();
+                    return CreatedAtAction("GetAppointment", new { id = appointmentView.Id }, appointmentView);
+                }
                 return BadRequest(new ApiResponseModel<string>
                 {
                     StatusCode = System.Net.HttpStatusCode.BadRequest,
-                    Message = "Cannot update appointment. Operation failed!"
+                    Message = mess
                 });
-
-            return NoContent();
-        }
-
-        private bool AppointmentExists(int id)
-        {
-            return _appointmentServices.GetAppointment(id) != null;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return NoContent();
+            }
         }
     }
 }
