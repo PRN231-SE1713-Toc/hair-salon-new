@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
 using HairSalon.Core.Contracts.Services;
-using AutoMapper;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Commons;
 using HairSalon.Core.Dtos.Responses;
