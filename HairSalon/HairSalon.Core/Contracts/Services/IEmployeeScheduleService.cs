@@ -16,5 +16,7 @@ namespace HairSalon.Core.Contracts.Services
         Task<bool> UpdateSchedule(UpdateEmployeeSchedule updatedSchedule);
         Task<bool> DeleteSchedule(EmployeeSchedule employeeSchedule);
 
+        Task<List<EmployeeScheduleResponse>> GetScheduleOfEmployee(int empId);
+
     }
 }

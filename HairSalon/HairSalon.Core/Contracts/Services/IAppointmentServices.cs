@@ -13,8 +13,8 @@ namespace HairSalon.Core.Contracts.Services
     {
         Task<List<AppointmentViewResponse>> GetAppointments();
         Task<AppointmentViewResponse?> GetAppointment(int id);
-        Task<bool> CreateAppointment(AppointmentCreateModel newAppointment);
-        Task<bool> UpdateAppointment(Appointment updatedAppointment);
-        Task<bool> DeleteAppointment(int id);
+        Task<string> CreateAppointment(AppointmentCreateModel newAppointment);
+        Task<string> UpdateAppointment(AppointmentUpdateModel updatedAppointment);
+        Task<string> DeleteAppointment(int id);
     }
 }

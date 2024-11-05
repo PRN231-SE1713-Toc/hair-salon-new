@@ -24,7 +24,7 @@ namespace HairSalon.Api.Controllers.v1
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesErrorResponseType(typeof(ApiResponseModel<string>))]
-        public async Task<ActionResult<ApiResponseModel<LoginCustomerResponse>>> LoginForCustomer([FromBody] LoginRequest requestModel)
+        public async Task<ActionResult<LoginCustomerResponse>> LoginForCustomer([FromBody] LoginRequest requestModel)
         {
             var customer = await _customerService.CheckLoginForCustomer(requestModel.Email, requestModel.Password);
             if (customer is null) return NotFound(new ApiResponseModel<string>()
@@ -32,13 +32,8 @@ namespace HairSalon.Api.Controllers.v1
                 StatusCode = System.Net.HttpStatusCode.NotFound,
                 Message = "User not found"
             });
-           
-            return Ok(new ApiResponseModel<LoginCustomerResponse>()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Message = "Success",
-                Response = customer
-            });
+
+            return Ok(customer);
         }
 
         /// <summary>
@@ -50,21 +45,16 @@ namespace HairSalon.Api.Controllers.v1
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesErrorResponseType(typeof(ApiResponseModel<string>))]
-        public async Task<ActionResult<ApiResponseModel<LoginEmployeeResponse>>> LoginForEmployee([FromBody] LoginRequest requestModel)
+        public async Task<ActionResult<LoginEmployeeResponse>> LoginForEmployee([FromBody] LoginRequest requestModel)
         {
             var employee = await _employeeService.CheckLoginForEmployee(requestModel.Email, requestModel.Password);
             if (employee is null) return NotFound(new ApiResponseModel<string>()
             {
-                StatusCode = System.Net.HttpStatusCode.NotFound,
+                StatusCode = HttpStatusCode.NotFound,
                 Message = "User not found"
             });
 
-            return Ok(new ApiResponseModel<LoginEmployeeResponse>()
-            {
-                StatusCode = HttpStatusCode.OK,
-                Message = "Success",
-                Response = employee,
-            });
+            return employee;
         }
     }
 }

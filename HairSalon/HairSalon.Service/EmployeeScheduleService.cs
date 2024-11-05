@@ -4,18 +4,11 @@ using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Entities;
-using HairSalon.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HairSalon.Service
 {
-    public class EmployeeScheduleService( IUnitOfWork unitOfWork,
+    public class EmployeeScheduleService(IUnitOfWork unitOfWork,
         IMapper mapper) : IEmployeeScheduleService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -42,7 +35,7 @@ namespace HairSalon.Service
             }
         }
 
-        
+
         // GET ALL
         public async Task<List<EmployeeScheduleResponse>> GetSchedule()
         {
@@ -80,6 +73,16 @@ namespace HairSalon.Service
                 await _unitOfWork.CommitAsync();
                 return false;
             }
+        }
+
+        public async Task<List<EmployeeScheduleResponse>> GetScheduleOfEmployee(int empId)
+        {
+            var schedules = await _unitOfWork.EmployeeScheduleRepository.GetAll()
+                .AsNoTracking()
+                .Include(es => es.Employee)
+                .Where(es => es.EmployeeId == empId).ToListAsync();
+
+            return _mapper.Map<List<EmployeeScheduleResponse>>(schedules);
         }
     }
 }
