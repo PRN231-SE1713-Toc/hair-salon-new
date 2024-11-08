@@ -108,22 +108,5 @@ namespace HairSalon.Service
             var customer = await _unitOfWork.CustomerRepository.GetAsync(c => c.Id == id);
             return _mapper.Map<CustomerResponse>(customer);
         }
-        public async Task<Pagination<Customer>> GetCustomerByFilterAsync(PaginationParameter paginationParameter, CustomerFilterDTO customerFilterDTO)
-        {
-            try
-            {
-                var customers = await _unitOfWork.CustomerRepository.GetCustomerByFilterAsync(paginationParameter, customerFilterDTO);
-                if (customers != null)
-                {
-                    var mapperResult = _mapper.Map<List<Customer>>(customers);
-                    return new Pagination<Customer>(mapperResult, customers.TotalCount, customers.CurrentPage, customers.PageSize);
-                }
-                return null;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
     }
 }

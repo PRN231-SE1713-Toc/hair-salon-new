@@ -6,6 +6,5 @@ namespace HairSalon.Core.Contracts.Repositories
 {
     public interface ICustomerRepository : IRepository<Customer>
     {
-        public Task<Pagination<Customer>> GetCustomerByFilterAsync(PaginationParameter paginationParameter, CustomerFilterDTO customerFilterDTO);
     }
 }
