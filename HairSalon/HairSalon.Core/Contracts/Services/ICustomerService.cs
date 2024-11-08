@@ -21,6 +21,5 @@ namespace HairSalon.Core.Contracts.Services
         Task<bool> UpdateCustomer(UpdatedCustomer updatedCustomer);
 
         Task<bool> DeleteCustomer(Customer customer);
-        public Task<Pagination<Customer>> GetCustomerByFilterAsync(PaginationParameter paginationParameter, CustomerFilterDTO customerFilterDTO);
     }
 }
