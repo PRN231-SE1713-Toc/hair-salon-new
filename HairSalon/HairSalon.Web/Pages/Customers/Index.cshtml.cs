@@ -7,23 +7,32 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
+using HairSalon.Web.Pages.Endpoints;
 
 namespace HairSalon.Web.Pages.Customers
 {
     public class IndexModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IndexModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public IndexModel(
+            HttpClient httpClient,
+            IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IList<Customer> Customer { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            Customer = await _context.Customers.ToListAsync();
+            var result = await _httpClient.GetAsync(ApplicationEndpoint.CustomerGetAllEndPoint);
+            if (result.IsSuccessStatusCode)
+            {
+                Customer = await result.Content.ReadFromJsonAsync<List<Customer>>();
+            }
         }
     }
 }
