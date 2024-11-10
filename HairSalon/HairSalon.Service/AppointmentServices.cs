@@ -6,6 +6,7 @@ using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Entities;
 using HairSalon.Core.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace HairSalon.Service
@@ -169,6 +170,118 @@ namespace HairSalon.Service
                 .Include (a => a.AppointmentServices)
                 .AsNoTracking()
                 .ToListAsync();
+
+            //No record
+            if (list == null) return new List<AppointmentViewResponse>();
+
+            var services = await _unitOfWork.ServiceRepository.GetAll().ToListAsync();
+
+            var appointments = list.Select(result => new AppointmentViewResponse
+            {
+                Id = result.Id,
+                CustomerId = result.CustomerId,
+                CustomerName = result.Customer.Name,
+                StylistId = result.StylistId,
+                StylistName = result.Stylist.Name,
+                AppointmentDate = result.AppointmentDate,
+                StartTime = result.StartTime,
+                EndTime = result.EndTime,
+                Note = result.Note,
+                AppointmentStatus = result.AppointmentStatus.ToString(),
+                AppointmentServices = result.AppointmentServices.Select(res => new AppointmentServiceDto
+                {
+                    Id = res.Id,
+                    AppointmentId = res.AppointmentId,
+                    ServiceId = res.ServiceId,
+                    ServiceName = services.FirstOrDefault(s => s.Id == res.ServiceId)?.Name ?? null,
+                    CurrentPrice = res.CurrentPrice,
+                }),
+                AppointmentCost = result.AppointmentServices.Sum(a => a.CurrentPrice)
+            }).ToList();
+
+            return appointments;
+        }
+
+        public async Task<List<AppointmentViewResponse>> GetAppointmentsbyCustomerId(int customerId, int status)
+        {
+            List<Appointment> list = new List<Appointment>();
+            if (status < 0) {
+                list = await _unitOfWork.AppointmentRepository
+                .GetAll()
+                .Where(s => s.CustomerId == customerId)
+                .Include(a => a.Customer)
+                .Include(a => a.Stylist)
+                .Include(a => a.AppointmentServices)
+                .AsNoTracking()
+                .ToListAsync();
+            } else
+            {
+                list = await _unitOfWork.AppointmentRepository
+                .GetAll()
+                .Where(a => a.CustomerId == customerId && a.AppointmentStatus == (AppointmentStatus) status)
+                .Include(a => a.Customer)
+                .Include(a => a.Stylist)
+                .Include(a => a.AppointmentServices)
+                .AsNoTracking()
+                .ToListAsync();
+            }
+
+            //No record
+            if (list == null) return new List<AppointmentViewResponse>();
+
+            var services = await _unitOfWork.ServiceRepository.GetAll().ToListAsync();
+
+            var appointments = list.Select(result => new AppointmentViewResponse
+            {
+                Id = result.Id,
+                CustomerId = result.CustomerId,
+                CustomerName = result.Customer.Name,
+                StylistId = result.StylistId,
+                StylistName = result.Stylist.Name,
+                AppointmentDate = result.AppointmentDate,
+                StartTime = result.StartTime,
+                EndTime = result.EndTime,
+                Note = result.Note,
+                AppointmentStatus = result.AppointmentStatus.ToString(),
+                AppointmentServices = result.AppointmentServices.Select(res => new AppointmentServiceDto
+                {
+                    Id = res.Id,
+                    AppointmentId = res.AppointmentId,
+                    ServiceId = res.ServiceId,
+                    ServiceName = services.FirstOrDefault(s => s.Id == res.ServiceId)?.Name ?? null,
+                    CurrentPrice = res.CurrentPrice,
+                }),
+                AppointmentCost = result.AppointmentServices.Sum(a => a.CurrentPrice)
+            }).ToList();
+
+            return appointments;
+        }
+
+        public async Task<List<AppointmentViewResponse>> GetAppointmentsByStylistId(int stylistId, int status)
+        {
+            List<Appointment> list = new List<Appointment>();
+            if (status < 0)
+            {
+                list = await _unitOfWork.AppointmentRepository
+                .GetAll()
+                .Where(s => s.CustomerId == stylistId)
+                .Include(a => a.Customer)
+                .Include(a => a.Stylist)
+                .Include(a => a.AppointmentServices)
+                .AsNoTracking()
+                .ToListAsync();
+            }
+            else
+            {
+                list = await _unitOfWork.AppointmentRepository
+                .GetAll()
+                .Where(a => a.CustomerId == stylistId && a.AppointmentStatus == (AppointmentStatus) status)
+                .Include(a => a.Customer)
+                .Include(a => a.Stylist)
+                .Include(a => a.AppointmentServices)
+                .AsNoTracking()
+                .ToListAsync();
+            }
 
             //No record
             if (list == null) return new List<AppointmentViewResponse>();

@@ -59,15 +59,55 @@ namespace HairSalon.Api.Controllers.v1
                 return NotFound(new ApiResponseModel<string>
                 {
                     StatusCode = System.Net.HttpStatusCode.NotFound,
-                    Message = "Appointment not found!"
+                    Message = "Appointments not found!"
                 });
             }
 
             return Ok(appointment);
         }
 
-        // TODO: Change the action result of this endpoint, return Ok with the message or NoContent
-        [HttpPut("appointment/{id}")]
+        [HttpGet("appointments/customerId/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AppointmentViewResponse>> GetAppointmentbyCustomerId(int id, int status)
+        {
+            //var customer
+            var appointment = await _appointmentServices.GetAppointmentsbyCustomerId(id, status);
+
+            if (appointment == null || appointment.Count == 0)
+            {
+                return NotFound(new ApiResponseModel<string>
+                {
+                    StatusCode = System.Net.HttpStatusCode.NotFound,
+                    Message = "Appointments not found!"
+                });
+            }
+
+            return Ok(appointment);
+        }
+
+        [HttpGet("appointments/stylistId/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AppointmentViewResponse>> GetAppointmentbyStylistId(int id, int status)
+        {
+            var appointment = await _appointmentServices.GetAppointmentsByStylistId(id, status);
+
+            if (appointment == null || appointment.Count == 0)
+            {
+                return NotFound(new ApiResponseModel<string>
+                {
+                    StatusCode = System.Net.HttpStatusCode.NotFound,
+                    Message = "Appointments not found!"
+                });
+            }
+
+            return Ok(appointment);
+        }
+
+        //PUT: api/Appointments/5
+        //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
         public async Task<IActionResult> PutAppointment(AppointmentUpdateModel appointment)
         {
             try
@@ -91,9 +131,10 @@ namespace HairSalon.Api.Controllers.v1
                 return NoContent();
             }
         }
-        
-        // TODO: Change the action result of this endpoint, return Ok with the message or NoContent
-        [HttpPost("appointment")]
+
+        //POST: api/Appointments
+        //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
         public async Task<ActionResult<Appointment>> PostAppointment(AppointmentCreateModel appointment)
         {
             try
@@ -117,8 +158,8 @@ namespace HairSalon.Api.Controllers.v1
                 return NoContent();
             }
         }
-        
-        // TODO: Change the action result of this endpoint, return Ok with the message or NoContent
+
+        //DELETE: api/Appointments/5
         [HttpDelete("appointment/{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
