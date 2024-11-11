@@ -20,5 +20,7 @@
         // Employee endpoints
 
         // Hair service endpoints
+
+        public const string ServiceGetAllEndPoint = Domain + "hair-services";
     }
 }
