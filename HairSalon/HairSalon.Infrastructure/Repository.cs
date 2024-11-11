@@ -7,7 +7,7 @@ namespace HairSalon.Infrastructure
 {
     public class Repository<T>(HairSalonDbContext dbContext) : IRepository<T> where T : class
     {
-        private readonly HairSalonDbContext _dbContext = dbContext;
+        protected readonly HairSalonDbContext _dbContext = dbContext;
         private readonly DbSet<T> _dbSet = dbContext.Set<T>();
 
         public void Add(T entity) => _dbContext.Add(entity);

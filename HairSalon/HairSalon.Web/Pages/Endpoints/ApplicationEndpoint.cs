@@ -20,7 +20,11 @@
         // Employee endpoints
 
         // Hair service endpoints
+        public const string GetHairServiceEndpoint = Domain + "hair-services";
 
-        public const string ServiceGetAllEndPoint = Domain + "hair-services";
+        /// <summary>
+        /// Methods: POST, PUT, DELETE
+        /// </summary>
+        public const string OtherHairServiceEndpoint = Domain + "hair-service";
     }
 }

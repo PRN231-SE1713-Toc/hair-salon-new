@@ -5,9 +5,6 @@ using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Commons;
 using System.Net;
-using HairSalon.Core.Dtos.PaginationDtos;
-using HairSalon.Service;
-using Newtonsoft.Json;
 
 namespace HairSalon.Api.Controllers.v1
 {
@@ -143,7 +140,8 @@ namespace HairSalon.Api.Controllers.v1
                 });
             return NoContent();
         }
-        [HttpDelete("hair-service-filter")]
+        
+        /*[HttpDelete("hair-service-filter")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -169,6 +167,6 @@ namespace HairSalon.Api.Controllers.v1
             {
                 return BadRequest(ex.Message);
             }
-        }
+        }*/
     }
 }

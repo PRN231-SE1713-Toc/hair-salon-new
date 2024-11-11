@@ -1,46 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using HairSalon.Web.Pages.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using HairSalon.Core.Entities;
-using HairSalon.Infrastructure;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace HairSalon.Web.Pages.HairServices
 {
     public class EditModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public EditModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public EditModel(
+            HttpClient httpClient,
+            IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
-        public Core.Entities.Service Service { get; set; } = default!;
+        public HairServiceResponse Service { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            // TODO: Add authorization
             if (id == null)
             {
                 return NotFound();
             }
-
-            var service =  await _context.Services.FirstOrDefaultAsync(m => m.Id == id);
-            if (service == null)
+            try
             {
-                return NotFound();
+                var service = await _httpClient.GetFromJsonAsync<HairServiceResponse>($"{ApplicationEndpoint.GetHairServiceEndpoint}/{id}");
+                if (service == null)
+                {
+                    return NotFound();
+                }
+                Service = service;
+                return Page();
+
             }
-            Service = service;
-            return Page();
+            catch
+            {
+                ModelState.AddModelError(string.Empty, "An error occured while trying to fetch hair service!");
+                return Page();
+            }
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -48,30 +54,20 @@ namespace HairSalon.Web.Pages.HairServices
                 return Page();
             }
 
-            _context.Attach(Service).State = EntityState.Modified;
-
+            var api = ApplicationEndpoint.OtherHairServiceEndpoint + $"/{Service.Id}";
             try
             {
-                await _context.SaveChangesAsync();
+                var content = new StringContent(JsonConvert.SerializeObject(Service), Encoding.UTF8, "application/json");
+                var result = await _httpClient.PutAsync(api, content);
+                if (result.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    return RedirectToPage("./Index");
             }
-            catch (DbUpdateConcurrencyException)
+            catch (HttpRequestException ex)
             {
-                if (!ServiceExists(Service.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                ModelState.AddModelError(string.Empty, $"{ex.Message}");
+                //return Page();
             }
-
-            return RedirectToPage("./Index");
-        }
-
-        private bool ServiceExists(int id)
-        {
-            return _context.Services.Any(e => e.Id == id);
+            return Page();
         }
     }
 }

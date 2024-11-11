@@ -1,43 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using HairSalon.Web.Pages.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using HairSalon.Core.Entities;
-using HairSalon.Infrastructure;
 
 namespace HairSalon.Web.Pages.HairServices
 {
     public class DetailsModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public DetailsModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public DetailsModel(
+            HttpClient httpClient,
+            IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public Core.Entities.Service Service { get; set; } = default!;
+        public HairServiceResponse Service { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            // TODO: Add authorization
             if (id == null)
             {
                 return NotFound();
             }
-
-            var service = await _context.Services.FirstOrDefaultAsync(m => m.Id == id);
-            if (service == null)
+            try
             {
-                return NotFound();
+                var api = ApplicationEndpoint.GetHairServiceEndpoint + $"/{id}";
+                var response = await _httpClient.GetFromJsonAsync<HairServiceResponse>(api);
+                if (response == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    Service = response;
+                }
+                return Page();
             }
-            else
+            catch (HttpRequestException ex)
             {
-                Service = service;
+                ModelState.AddModelError(string.Empty, $"An error occured while trying to fetch hair service! {ex.Message}");
+                return Page();
             }
-            return Page();
         }
     }
 }

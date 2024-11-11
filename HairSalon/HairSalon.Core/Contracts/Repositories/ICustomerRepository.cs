@@ -1,6 +1,4 @@
-﻿using HairSalon.Core.Commons;
-using HairSalon.Core.Dtos.PaginationDtos;
-using HairSalon.Core.Entities;
+﻿using HairSalon.Core.Entities;
 
 namespace HairSalon.Core.Contracts.Repositories
 {

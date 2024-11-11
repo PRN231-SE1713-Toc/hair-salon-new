@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using HairSalon.Core;
-using HairSalon.Core.Commons;
 using HairSalon.Core.Contracts.Services;
-using HairSalon.Core.Dtos.PaginationDtos;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Entities;

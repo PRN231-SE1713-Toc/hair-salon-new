@@ -1,5 +1,4 @@
 using HairSalon.Web.Pages.Endpoints;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
 
@@ -22,7 +21,7 @@ namespace HairSalon.Web.Pages
 
         public async Task OnGet()
         {
-            var response = await _httpClient.GetAsync(ApplicationEndpoint.ServiceGetAllEndPoint);
+            var response = await _httpClient.GetAsync(ApplicationEndpoint.GetHairServiceEndpoint);
 
             if (response.IsSuccessStatusCode)
             {
@@ -30,7 +29,7 @@ namespace HairSalon.Web.Pages
                 Services = JsonSerializer.Deserialize<List<Service>>(jsonString, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
-                });
+                }) ?? new List<Service>();
             }
             else
             {
