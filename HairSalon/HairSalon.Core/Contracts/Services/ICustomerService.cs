@@ -1,6 +1,4 @@
-﻿using HairSalon.Core.Commons;
-using HairSalon.Core.Dtos.PaginationDtos;
-using HairSalon.Core.Dtos.Requests;
+﻿using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Entities;
 
@@ -21,6 +19,5 @@ namespace HairSalon.Core.Contracts.Services
         Task<bool> UpdateCustomer(UpdatedCustomer updatedCustomer);
 
         Task<bool> DeleteCustomer(Customer customer);
-        public Task<Pagination<Customer>> GetCustomerByFilterAsync(PaginationParameter paginationParameter, CustomerFilterDTO customerFilterDTO);
     }
 }

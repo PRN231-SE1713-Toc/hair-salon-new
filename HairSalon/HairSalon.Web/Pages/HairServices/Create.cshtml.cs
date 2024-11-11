@@ -1,44 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using HairSalon.Core.Entities;
-using HairSalon.Infrastructure;
+using HairSalon.Web.Pages.Endpoints;
 
 namespace HairSalon.Web.Pages.HairServices
 {
     public class CreateModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CreateModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public CreateModel(
+            HttpClient httpClient,
+            IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
         }
 
+        // TODO: Handle data loss when creating a service but it is failed
         public IActionResult OnGet()
         {
             return Page();
         }
 
         [BindProperty]
-        public Core.Entities.Service Service { get; set; } = default!;
+        public HairServiceModel Service { get; set; } = default!;
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
+
         public async Task<IActionResult> OnPostAsync()
         {
+            // TODO: Add authorization
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Services.Add(Service);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync(ApplicationEndpoint.OtherHairServiceEndpoint, Service);
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToPage("./Index");
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Unable to create hair service! {ex.Message}");
+            }
+            return Page();
         }
+    }
+
+    public class HairServiceModel
+    {
+        public string Name { get; set; } = null!;
+
+        public string Description { get; set; } = null!;
+
+        public string? Duration { get; set; }
+
+        public decimal Price { get; set; }
     }
 }

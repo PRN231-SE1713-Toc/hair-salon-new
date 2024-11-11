@@ -9,7 +9,7 @@
         public const string CustomerLoginEndpoint = Domain + "customer/login";
         
         public const string EmployeeLoginEndpoint = Domain + "employee/login";
-        
+
         // Customer endpoints
 
         // Appointment endpoints
@@ -17,5 +17,11 @@
         // Employee endpoints
 
         // Hair service endpoints
+        public const string GetHairServiceEndpoint = Domain + "hair-services";
+
+        /// <summary>
+        /// Methods: POST, PUT, DELETE
+        /// </summary>
+        public const string OtherHairServiceEndpoint = Domain + "hair-service";
     }
 }

@@ -1,45 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using HairSalon.Web.Pages.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using HairSalon.Core.Entities;
-using HairSalon.Infrastructure;
 
 namespace HairSalon.Web.Pages.HairServices
 {
     public class DeleteModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly HttpClient _httpClient;
 
-        public DeleteModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public DeleteModel(
+            IHttpContextAccessor httpContextAccessor,
+            HttpClient httpClient)
         {
-            _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            _httpClient = httpClient;
         }
 
         [BindProperty]
-        public Core.Entities.Service Service { get; set; } = default!;
+        public HairServiceResponse Service { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
+            // TODO: Add authorization
             if (id == null)
             {
                 return NotFound();
             }
-
-            var service = await _context.Services.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (service == null)
+            var api = ApplicationEndpoint.GetHairServiceEndpoint + $"/{id}";
+            try
             {
-                return NotFound();
+                var service = await _httpClient.GetFromJsonAsync<HairServiceResponse>(api);
+                if (service == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    Service = service;
+                    return Page();
+                }
             }
-            else
+            catch (HttpRequestException ex)
             {
-                Service = service;
+                ModelState.AddModelError(string.Empty, $"An error occured while trying to fetch hair service! {ex.Message}");
+                return Page();
             }
-            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int? id)
@@ -49,15 +55,16 @@ namespace HairSalon.Web.Pages.HairServices
                 return NotFound();
             }
 
-            var service = await _context.Services.FindAsync(id);
-            if (service != null)
+            var result = await _httpClient.DeleteAsync(ApplicationEndpoint.OtherHairServiceEndpoint + $"/{id}");
+            if (result.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
-                Service = service;
-                _context.Services.Remove(Service);
-                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
-
-            return RedirectToPage("./Index");
+            else
+            {
+                ModelState.AddModelError(string.Empty, "An error occured while trying to delete hair service!");
+                return await OnGetAsync(id);
+            }
         }
     }
 }

@@ -1,29 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using HairSalon.Web.Pages.Endpoints;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using HairSalon.Core.Entities;
-using HairSalon.Infrastructure;
 
 namespace HairSalon.Web.Pages.HairServices
 {
     public class IndexModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IndexModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public IndexModel(
+            HttpClient httpClient,
+            IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public IList<Core.Entities.Service> Service { get;set; } = default!;
+        public IList<HairServiceResponse> HairServices { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
-            Service = await _context.Services.ToListAsync();
+            // TODO: Add authorization
+            try
+            {
+                var response = await _httpClient.GetFromJsonAsync<IList<HairServiceResponse>>(ApplicationEndpoint.GetHairServiceEndpoint);
+                if (response is not null)
+                {
+                    HairServices = response;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                ModelState.AddModelError(string.Empty, $"An error occured while trying to fetch hair services! {ex.Message}");
+            }
         }
+    }
+
+    public class HairServiceResponse
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; } = null!;
+
+        public string Description { get; set; } = null!;
+
+        public string? EstimatedDuration { get; set; }
+
+        public decimal Price { get; set; }
     }
 }
