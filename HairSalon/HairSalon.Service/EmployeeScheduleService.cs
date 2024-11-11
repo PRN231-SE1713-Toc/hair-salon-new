@@ -84,5 +84,24 @@ namespace HairSalon.Service
 
             return _mapper.Map<List<EmployeeScheduleResponse>>(schedules);
         }
+
+        public async Task<EmployeeScheduleResponse> CreateSchedule(CreateEmployeeScheduleModel createScheduleDto)
+        {
+            try
+            {
+                var employeeSchedule = _mapper.Map<EmployeeSchedule>(createScheduleDto);
+
+                _unitOfWork.EmployeeScheduleRepository.Add(employeeSchedule);
+                await _unitOfWork.CommitAsync();
+
+                return _mapper.Map<EmployeeScheduleResponse>(employeeSchedule);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                return null;
+            }
+        }
+
     }
 }

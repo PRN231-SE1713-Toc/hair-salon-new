@@ -6160,3 +6160,23 @@ h6 {
 }
 
 /*# sourceMappingURL=style.css.map */
+
+.nav-login {
+    background: #eb592d;
+    font-size: 16px;
+    font-weight: 400;
+    border: 1px solid transparent;
+    color: #fff;
+    padding: .75rem 1rem;
+    font-family: "Lato", sans-serif;
+    display: inline-block;
+    line-height: 1;
+    text-decoration: none
+}
+
+/* line 39, ../../Arafath/CL/january 2020/238. Barber/HTML/scss/_btn.scss */
+.nav-login:hover {
+    background: transparent;
+    color: #eb592d;
+    border: 1px solid #eb592d;
+}

@@ -106,6 +106,5 @@ namespace HairSalon.Service
             var customer = await _unitOfWork.CustomerRepository.GetAsync(c => c.Id == id);
             return _mapper.Map<CustomerResponse>(customer);
         }
-        
     }
 }

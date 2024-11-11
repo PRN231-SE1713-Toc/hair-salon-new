@@ -12,8 +12,11 @@
 
         // Customer endpoints
 
-        // Appointment endpoints
+        public const string CustomerGetAllEndPoint = Domain + "customers";
 
+        // Appointment endpoints
+        public const string AppointmentGetAllEndPoint = Domain + "appointments";
+        public const string AppointmentGetByUserIdEndPoint = Domain + "appointments";
         // Employee endpoints
 
         // Hair service endpoints

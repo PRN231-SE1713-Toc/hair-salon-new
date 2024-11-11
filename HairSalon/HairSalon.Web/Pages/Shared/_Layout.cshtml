@@ -19,48 +19,30 @@
                             <a asp-page="/Index">
                                 <img src="~/img/logo.png" alt="Logo">
                             </a>
-                        </div>
-                    </div>
-                    <div class="col-xl-9 col-lg-9">
-                        <div class="menu_wrap d-none d-lg-block">
-                            <div class="menu_wrap_inner d-flex align-items-center justify-content-end">
-                                <div class="main-menu">
-                                    <nav>
-                                        <ul id="navigation">
-                                            <li><a class="active" asp-page="/Index">home</a></li>
-                                            <li><a asp-page="/Service">service</a></li>
-                                            <li>
-                                                <a href="#">blog <i class="ti-angle-down"></i></a>
-                                                <ul class="submenu">
-                                                    <li><a asp-page="/Blog">blog</a></li>
-                                                    <li><a asp-page="/SingleBlog">single-blog</a></li>
-                                                </ul>
-                                            </li>
-                                            <li>
-                                                <a href="#">pages <i class="ti-angle-down"></i></a>
-                                                <ul class="submenu">
-                                                    <li><a asp-page="/About">about</a></li>
-                                                    <li><a asp-page="/Elements">elements</a></li>
-                                                </ul>
-                                            </li>
-                                            <li><a asp-page="/Contact">Contact</a></li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                                <div class="book_room">
-                                    <div class="book_btn">
-                                        <a class="popup-with-form" href="#test-form">Appointment</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="mobile_menu d-block d-lg-none"></div>
-                    </div>
+                            <ul class="dropdown-menu" aria-labelledby="blogDropdown">
+                                <li><a class="dropdown-item" asp-page="/Blog">Blog</a></li>
+                                <li><a class="dropdown-item" asp-page="/SingleBlog">Single Blog</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Pages
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="pagesDropdown">
+                                <li><a class="dropdown-item" asp-page="/About">About</a></li>
+                                <li><a class="dropdown-item" asp-page="/Elements">Elements</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-page="/Contact">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-login" asp-page="/Login">Login</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </div>
+        </nav>
     </header>
 
     <div class="content">

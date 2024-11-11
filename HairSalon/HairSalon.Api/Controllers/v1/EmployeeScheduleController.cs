@@ -3,6 +3,7 @@ using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace HairSalon.Api.Controllers.v1
 {
@@ -89,6 +90,42 @@ namespace HairSalon.Api.Controllers.v1
                 });
             }
             return NoContent();
+        }
+
+        [HttpPost("schedules")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesErrorResponseType(typeof(ApiResponseModel<string>))]
+        public async Task<IActionResult> CreateSchedule([FromBody] CreateEmployeeScheduleModel createScheduleDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponseModel<string>
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Invalid data provided",
+                    Response = null
+                });
+            }
+
+            var createdSchedule = await _employeeScheduleService.CreateSchedule(createScheduleDto);
+
+            if (createdSchedule == null)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, new ApiResponseModel<string>
+                {
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    Message = "Error creating schedule",
+                    Response = null
+                });
+            }
+
+            return CreatedAtAction(nameof(GetSchedule), new { id = createdSchedule.Id }, new ApiResponseModel<EmployeeScheduleResponse>
+            {
+                StatusCode = HttpStatusCode.Created,
+                Message = "Schedule created successfully",
+                Response = createdSchedule
+            });
         }
     }
 }
