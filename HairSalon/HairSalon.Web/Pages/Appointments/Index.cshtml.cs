@@ -7,25 +7,44 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
+using HairSalon.Web.Pages.Endpoints;
+using HairSalon.Core.Dtos.Responses;
 
 namespace HairSalon.Web.Pages.Appointments
 {
     public class IndexModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public IndexModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public IndexModel(
+            HttpClient httpClient,
+            IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public IList<Appointment> Appointment { get;set; } = default!;
+        public IList<AppointmentViewResponse> Appointment { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            Appointment = await _context.Appointments
-                .Include(a => a.Customer)
-                .Include(a => a.Stylist).ToListAsync();
+            int? customerId = _httpContextAccessor.HttpContext.Session.GetInt32("CustomerId");
+            if (customerId == null)
+            {
+                Appointment = new List<AppointmentViewResponse>();
+                return;
+            }
+            else
+            {
+                var result = await _httpClient.GetAsync(ApplicationEndpoint.AppointmentGetByCustomerIdEndPoint
+                                                            + customerId.ToString() + "?status=-1");
+
+                if (result.IsSuccessStatusCode)
+                {
+                    Appointment = await result.Content.ReadFromJsonAsync<List<AppointmentViewResponse>>();
+                }
+            }
         }
     }
 }
