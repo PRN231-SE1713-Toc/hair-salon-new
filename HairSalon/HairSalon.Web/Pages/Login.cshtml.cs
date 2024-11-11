@@ -45,7 +45,7 @@ namespace HairSalon.Web.Pages
                     _httpContextAccessor.HttpContext?.Session.SetString("CustomerToken", customer.AccessToken);
 
                     // TODO: change the url
-                    return RedirectToPage("/Customers/Index");
+                    return RedirectToPage("/Appointments/Index");
                 }
             }
             else if (employeeResponse.IsSuccessStatusCode)
@@ -59,7 +59,7 @@ namespace HairSalon.Web.Pages
                     _httpContextAccessor.HttpContext?.Session.SetString("EmpToken", employee.AccessToken);
 
                     // TODO: change the url
-                    return RedirectToPage("/Index");
+                    return RedirectToPage("/Appointments/Index");
                 }
             }
             // Login failed

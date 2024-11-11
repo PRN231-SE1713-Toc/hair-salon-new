@@ -23,16 +23,13 @@
                 @Html.DisplayNameFor(model => model.Appointment[0].EndTime)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Appointment[0].StylistName)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Appointment[0].Note)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Appointment[0].AppointmentStatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Appointment[0].Customer)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Appointment[0].Stylist)
             </th>
             <th></th>
         </tr>
@@ -50,16 +47,13 @@
                 @Html.DisplayFor(modelItem => item.EndTime)
             </td>
             <td>
+                <a asp-page="./StylistDetail" asp-route-stylistId="@item.StylistId" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.StylistName)</a>
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Note)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.AppointmentStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Customer.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Stylist.Email)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |

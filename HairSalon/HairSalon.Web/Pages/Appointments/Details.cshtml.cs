@@ -7,19 +7,25 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
+using HairSalon.Core.Dtos.Responses;
+using HairSalon.Web.Pages.Endpoints;
 
 namespace HairSalon.Web.Pages.Appointments
 {
     public class DetailsModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public DetailsModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public DetailsModel(
+            HttpClient httpClient,
+            IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public Appointment Appointment { get; set; } = default!;
+        public AppointmentViewResponse Appointment { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -28,14 +34,14 @@ namespace HairSalon.Web.Pages.Appointments
                 return NotFound();
             }
 
-            var appointment = await _context.Appointments.FirstOrDefaultAsync(m => m.Id == id);
+            var appointment = await _httpClient.GetAsync(ApplicationEndpoint.AppointmentGetByIdEndPoint + id);
             if (appointment == null)
             {
                 return NotFound();
             }
             else
             {
-                Appointment = appointment;
+                Appointment = await appointment.Content.ReadFromJsonAsync<AppointmentViewResponse>();
             }
             return Page();
         }

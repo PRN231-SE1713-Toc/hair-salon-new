@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using HairSalon.Core.Entities;
+using HairSalon.Web.Pages.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using HairSalon.Core.Entities;
-using HairSalon.Infrastructure;
-using HairSalon.Web.Pages.Endpoints;
 
-namespace HairSalon.Web.Pages.Employees
+namespace HairSalon.Web.Pages.Appointments
 {
-    public class DetailsModel : PageModel
+    public class StylistDetailModel : PageModel
     {
         private readonly HttpClient _httpClient;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public DetailsModel(
+        public StylistDetailModel(
             HttpClient httpClient,
             IHttpContextAccessor httpContextAccessor)
         {
@@ -25,15 +19,18 @@ namespace HairSalon.Web.Pages.Employees
         }
 
         public Employee Employee { get; set; } = default!;
+        public int appointmentId { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? id, int? stylistId)
         {
-            if (id == null)
+            if (id == null || stylistId == null)
             {
                 return NotFound();
             }
 
-            var employee = await _httpClient.GetAsync(ApplicationEndpoint.EmployeeGetByIdEndPoint + id.ToString());
+            appointmentId = id??0;
+
+            var employee = await _httpClient.GetAsync(ApplicationEndpoint.EmployeeGetByIdEndPoint + stylistId.ToString());
             if (employee == null)
             {
                 return NotFound();
