@@ -7,6 +7,8 @@ using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text.RegularExpressions;
 
 namespace HairSalon.Service
 {
@@ -14,6 +16,7 @@ namespace HairSalon.Service
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private static readonly Regex DurationRegex = new Regex(@"^\d+$");
 
         public HairService(IUnitOfWork unitOfWork, IMapper mapper)
         {
@@ -26,10 +29,19 @@ namespace HairSalon.Service
             try
             {
                 if (serviceRequest is null) return false;
+
+                if (serviceRequest.Price < 0) return false;
+
                 // check duplicate of service
                 var existedService = await _unitOfWork.ServiceRepository
                     .GetAsync(s => s.Name == serviceRequest.Name && s.Price == serviceRequest.Price);
                 if (existedService is not null) return false;
+
+                if (!string.IsNullOrEmpty(serviceRequest.EstimatedDuration))
+                {
+                    if (!DurationRegex.IsMatch(serviceRequest.EstimatedDuration)) return false;
+                }
+
                 var service = _mapper.Map<Core.Entities.Service>(serviceRequest);
                 
                 _unitOfWork.ServiceRepository.Add(service);
@@ -88,6 +100,18 @@ namespace HairSalon.Service
             {
                 var service = await _unitOfWork.ServiceRepository.FindByIdAsync(request.Id);
                 if (service is null) return false;
+
+                if (request.Price < 0) return false;
+
+                var existedService = await _unitOfWork.ServiceRepository
+                .GetAsync(s => s.Name == request.Name && s.Price == request.Price && s.Id != request.Id);
+                if (existedService is not null) return false;
+
+                if (!string.IsNullOrEmpty(request.EstimatedDuration))
+                {
+                    if (!DurationRegex.IsMatch(request.EstimatedDuration)) return false;
+                }
+
                 _ = _mapper.Map(request, service);
                 _unitOfWork.ServiceRepository.Update(service);
                 await _unitOfWork.CommitAsync();
