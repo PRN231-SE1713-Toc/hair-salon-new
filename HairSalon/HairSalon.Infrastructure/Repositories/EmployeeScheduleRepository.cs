@@ -1,5 +1,6 @@
 ﻿using HairSalon.Core.Contracts.Repositories;
 using HairSalon.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace HairSalon.Infrastructure.Repositories
 {
