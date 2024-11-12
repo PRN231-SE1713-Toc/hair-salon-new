@@ -42,7 +42,7 @@ namespace HairSalon.Infrastructure
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //if (optionsBuilder)
-            optionsBuilder.UseSqlServer("Data Source=(local);Initial Catalog=HairSalon;User ID=sa;Password=123456;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False", sqlOptions => sqlOptions.CommandTimeout(120));
+            optionsBuilder.UseSqlServer("Data Source=(local);Initial Catalog=HairSalon;User ID=sa;Password=12345;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False", sqlOptions => sqlOptions.CommandTimeout(120));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
