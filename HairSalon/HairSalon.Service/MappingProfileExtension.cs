@@ -25,8 +25,10 @@ namespace HairSalon.Service
             CreateMap<UpdateHairServiceRequest, Core.Entities.Service>();
 
             CreateMap<EmployeeSchedule, EmployeeScheduleResponse>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Employee.Name)); ;
-            CreateMap<UpdateEmployeeSchedule, EmployeeSchedule>();
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Employee.Name));
+            CreateMap<UpdateEmployeeSchedule, EmployeeSchedule>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
+
             CreateMap<CreateEmployeeScheduleModel, EmployeeSchedule>()
                 .ForMember(dest => dest.WorkingStartTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.WorkingStartTime)))
                 .ForMember(dest => dest.WorkingEndTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.WorkingEndTime)));
