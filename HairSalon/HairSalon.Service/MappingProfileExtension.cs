@@ -27,7 +27,9 @@ namespace HairSalon.Service
             CreateMap<EmployeeSchedule, EmployeeScheduleResponse>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Employee.Name)); ;
             CreateMap<UpdateEmployeeSchedule, EmployeeSchedule>();
-            CreateMap<CreateEmployeeScheduleModel, EmployeeSchedule>();
+            CreateMap<CreateEmployeeScheduleModel, EmployeeSchedule>()
+                .ForMember(dest => dest.WorkingStartTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.WorkingStartTime)))
+                .ForMember(dest => dest.WorkingEndTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.WorkingEndTime)));
 
             CreateMap<AppointmentService, AppointmentServiceDto>().ReverseMap();
         }

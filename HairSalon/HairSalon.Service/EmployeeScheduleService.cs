@@ -89,19 +89,58 @@ namespace HairSalon.Service
         {
             try
             {
+                Console.WriteLine($"Received schedule request: EmployeeId = {createScheduleDto.EmployeeId}, Start Time = {createScheduleDto.WorkingStartTime}, End Time = {createScheduleDto.WorkingEndTime}");
+
+                var employeeExists = await _unitOfWork.EmployeeRepository.ExistsAsync(e => e.Id == createScheduleDto.EmployeeId);
+                if (!employeeExists)
+                {
+                    Console.WriteLine("Employee does not exist with the provided ID.");
+                    return null;
+                }
+
+                TimeOnly workingStartTime;
+                TimeOnly workingEndTime;
+
+                try
+                {
+                    workingStartTime = TimeOnly.Parse(createScheduleDto.WorkingStartTime);
+                    workingEndTime = TimeOnly.Parse(createScheduleDto.WorkingEndTime);
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine($"Error parsing times: {ex.Message}");
+                    return null;
+                }
+
+                Console.WriteLine($"Parsed start time: {workingStartTime}, Parsed end time: {workingEndTime}");
+
+                if (workingStartTime >= workingEndTime)
+                {
+                    Console.WriteLine("Invalid schedule times: Start time is after end time.");
+                    return null;
+                }
+
                 var employeeSchedule = _mapper.Map<EmployeeSchedule>(createScheduleDto);
+
+                Console.WriteLine($"Mapped EmployeeSchedule: {employeeSchedule.Id}, Start Time = {employeeSchedule.WorkingStartTime}, End Time = {employeeSchedule.WorkingEndTime}");
 
                 _unitOfWork.EmployeeScheduleRepository.Add(employeeSchedule);
                 await _unitOfWork.CommitAsync();
 
+                Console.WriteLine("Schedule successfully created and committed to the database.");
+
                 return _mapper.Map<EmployeeScheduleResponse>(employeeSchedule);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Exception: {ex.Message} \nStackTrace: {ex.StackTrace}");
+
                 await _unitOfWork.RollbackAsync();
+
                 return null;
             }
         }
+
 
     }
 }
