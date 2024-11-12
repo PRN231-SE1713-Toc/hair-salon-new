@@ -12,8 +12,8 @@ namespace HairSalon.Core.Dtos.Requests
 
         public DateOnly WorkingDate { get; set; }
 
-        public TimeOnly WorkingStartTime { get; set; }
+        public string WorkingStartTime { get; set; }
 
-        public TimeOnly WorkingEndTime { get; set; }
+        public string WorkingEndTime { get; set; }
     }
 }
