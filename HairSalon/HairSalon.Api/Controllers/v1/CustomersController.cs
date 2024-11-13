@@ -6,6 +6,7 @@ using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.PaginationDtos;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
+using System.Net;
 
 namespace HairSalon.Api.Controllers.v1
 {
@@ -78,19 +79,39 @@ namespace HairSalon.Api.Controllers.v1
         [HttpPost("customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesErrorResponseType(typeof(ApiResponseModel<string>))]
         public async Task<ActionResult<string>> CreateCustomer(CreatedCustomerModel customer)
         {
-            if (!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new ApiResponseModel<string>
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Invalid data provided"
+                });
+            }
+
+            var existingCustomer = await _customerService.GetCustomers();
+            var emailExist = existingCustomer.Where(e => e.Email == customer.Email).FirstOrDefault();
+            if (emailExist != null)
+            {
+                return BadRequest(new ApiResponseModel<string>
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Email is already registered"
+                });
+            }
+
             var result = await _customerService.CreateCustomer(customer);
             if (!result)
                 return BadRequest(new ApiResponseModel<string>
                 {
-                    StatusCode = System.Net.HttpStatusCode.BadRequest,
-                    Message = "Failed to create customer!"
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Failed to register!"
                 });
             return Ok(new ApiResponseModel<string>
             {
-                StatusCode = System.Net.HttpStatusCode.OK,
+                StatusCode = HttpStatusCode.OK,
                 Message = "Success!"
             });
         }

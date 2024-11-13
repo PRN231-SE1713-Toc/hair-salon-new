@@ -10,9 +10,12 @@
         
         public const string EmployeeLoginEndpoint = Domain + "employee/login";
 
+
         // Customer endpoints
 
         public const string CustomerGetAllEndPoint = Domain + "customers";
+
+        public const string CustomerRegisterEndPoint = Domain + "customer";
 
         // Appointment endpoints
         public const string AppointmentGetAllEndPoint = Domain + "appointments";
