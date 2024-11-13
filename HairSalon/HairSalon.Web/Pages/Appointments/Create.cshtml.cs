@@ -7,22 +7,34 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
+using HairSalon.Web.Pages.Endpoints;
+using Newtonsoft.Json;
 
 namespace HairSalon.Web.Pages.Appointments
 {
     public class CreateModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CreateModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public CreateModel(
+            HttpClient httpClient,
+            IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet()
         {
-        ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Email");
-        ViewData["StylistId"] = new SelectList(_context.Employees, "Id", "Email");
+            if (TempData["AppointmentData"] is string appointmentData)
+            {
+                Appointment = JsonConvert.DeserializeObject<Appointment>(appointmentData);
+            }
+            var employeeResponse = await _httpClient.GetAsync(ApplicationEndpoint.EmployeeGetAllEndPoint);
+            var employees = await employeeResponse.Content.ReadFromJsonAsync<List<Employee>>();
+            //ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Email");
+            ViewData["StylistId"] = new SelectList(employees, "Id", "Name");
             return Page();
         }
 
@@ -37,8 +49,8 @@ namespace HairSalon.Web.Pages.Appointments
                 return Page();
             }
 
-            _context.Appointments.Add(Appointment);
-            await _context.SaveChangesAsync();
+            //_context.Appointments.Add(Appointment);
+            //await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }

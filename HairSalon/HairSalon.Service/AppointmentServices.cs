@@ -30,7 +30,7 @@ namespace HairSalon.Service
                     return "Customer Id must be greater than 0";
                 if (newAppointment.StylistId <= 0) 
                     return "Stylist Id must be grater than 0";
-                if (newAppointment.AppointmentDate <= DateOnly.FromDateTime(DateTime.Now)) 
+                if (newAppointment.AppointmentDate < DateOnly.FromDateTime(DateTime.Now)) 
                     return "Booking date must be in the future";
                 if (newAppointment.EndTime <= newAppointment.StartTime) 
                     return "EndTime must not before StartTime";

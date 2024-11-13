@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace HairSalon.Core.Entities
 {
@@ -15,6 +16,7 @@ namespace HairSalon.Core.Entities
         [StringLength(300)]
         public string Description { get; set; } = null!;
 
+        [JsonPropertyName("estimatedDuration")]
         [Column("EstimatedDuration", TypeName = "nvarchar(100)")]
         public string? Duration { get; set; }
 
