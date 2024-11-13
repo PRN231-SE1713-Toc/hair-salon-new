@@ -1648,7 +1648,7 @@ h3 {
 .service_area .single_service .service_content {
     position: relative;
     padding: 64px 60px;
-    border: 1px solid #ffd1af;
+    /*border: 1px solid #ffd1af;*/
     border-top: none;
     margin-bottom: 30px;
 }
@@ -6179,4 +6179,39 @@ h6 {
     background: transparent;
     color: #eb592d;
     border: 1px solid #eb592d;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Đảm bảo các phần tử bên trong được căn đều */
+    height: 100%; /* Chiều cao đầy đủ để đồng đều với các card khác */
+    border: 1px solid #f0f0f0; /* Đường viền giúp phân biệt rõ ràng từng thẻ */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng để làm nổi bật card */
+    transition: transform 0.3s ease-in-out;
+}
+
+    .card:hover {
+        transform: translateY(-5px); /* Hiệu ứng hover làm thẻ nổi bật */
+    }
+
+.service_content {
+    flex-grow: 1; /* Đảm bảo phần nội dung lấp đầy không gian còn lại */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.service_thumb {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 1rem; /* Khoảng cách giữa hình ảnh và nội dung */
+}
+
+.navbar-black-full {
+    background-color: #000000 !important; 
+}
+
+#sticky-header .nav-link {
+    color: #ffffff !important; /* Màu trắng */
 }
