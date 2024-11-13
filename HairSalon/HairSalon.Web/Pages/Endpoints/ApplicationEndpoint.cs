@@ -25,8 +25,8 @@
         public const string AppointmentCreateEndPoint = Domain + "appointment";
 
         // Employee endpoints
-        public const string EmployeeGetAllEndPoint = "https://localhost:7200/api/Employees/employees";
-        public const string EmployeeGetByIdEndPoint = "https://localhost:7200/api/Employees/employees/";
+        public const string EmployeeGetAllEndPoint = "http://localhost:5255/api/Employees/employees";
+        public const string EmployeeGetByIdEndPoint = "http://localhost:5255/api/Employees/employees/";
         public const string EmployeeGetAvailableEndPoint = Domain + "date/";
 
         // EmployeeSchedule endpoints

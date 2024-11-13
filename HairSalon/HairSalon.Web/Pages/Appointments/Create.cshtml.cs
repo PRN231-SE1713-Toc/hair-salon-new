@@ -59,13 +59,26 @@ namespace HairSalon.Web.Pages.Appointments
             _httpClient.DefaultRequestHeaders.Authorization
                 = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             var result = await _httpClient.PostAsync(ApplicationEndpoint.AppointmentCreateEndPoint, JsonContent.Create(Appointment));
-            if (result.StatusCode == System.Net.HttpStatusCode.OK) 
+            if (result.StatusCode == System.Net.HttpStatusCode.Created) 
             {
                 return RedirectToPage("./Index");
             }
-            await Populate();
-            ModelState.AddModelError(string.Empty, "Unauthorized");
-            return Page();
+            if (result.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                return RedirectToPage("./Index");
+            }
+            else if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await Populate();
+                ModelState.AddModelError(string.Empty, "Unauthorized");
+                return Page();
+            }
+            else
+            {
+                await Populate();
+                ModelState.AddModelError(string.Empty, "Create failed");
+                return Page();
+            }
         }
 
         private async Task Populate()
