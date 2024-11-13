@@ -113,7 +113,7 @@ namespace HairSalon.Web.Pages.Appointments
             {
                 Id = s.Id,
                 Name = s.Name + " (" + s.Duration + ")",
-                Duration = formatDurationToNumber(s.Duration) ,
+                Duration = formatDurationToNumber(s.Duration ?? "0 minutes") ,
             }).ToList();
             TempData["AppointmentDate"] = TempData["AppointmentDate"];
             TempData["AppointmentStartTime"] = TempData["AppointmentStartTime"];
