@@ -4,6 +4,10 @@
     ViewData["Title"] = "CreateService";
     Layout = "_Layout";
 }
+@{
+    var selectedServiceIds = TempData["selectedServiceIds"] as string;
+}
+
 <h1>Create</h1>
 
 <h4>Appointment</h4>

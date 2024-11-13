@@ -13,7 +13,7 @@ namespace HairSalon.Core.Dtos.Requests
     {
         //public int Id { get; set; }
         [Required]
-        [Range(1, int.MaxValue, ErrorMessage ="Customer Id must greater than 0")]
+        [Range(0, int.MaxValue, ErrorMessage ="Customer Id must greater than 0")]
         public int CustomerId { get; set; }
 
         [Required]

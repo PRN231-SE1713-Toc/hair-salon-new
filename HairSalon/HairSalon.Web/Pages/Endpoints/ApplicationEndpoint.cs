@@ -22,10 +22,12 @@
         public const string AppointmentGetByCustomerIdEndPoint = Domain + "appointments/customerId/";
         public const string AppointmentGetByStylistIdEndPoint = Domain + "appointments/stylistId/";
         public const string AppointmentGetByIdEndPoint = Domain + "appointments/";
+        public const string AppointmentCreateEndPoint = Domain + "appointment";
 
         // Employee endpoints
         public const string EmployeeGetAllEndPoint = "https://localhost:7200/api/Employees/employees";
         public const string EmployeeGetByIdEndPoint = "https://localhost:7200/api/Employees/employees/";
+        public const string EmployeeGetAvailableEndPoint = Domain + "date/";
 
         // EmployeeSchedule endpoints
         public const string EmployeeScheduleGetAllEndpoint = Domain + "schedules";

@@ -111,7 +111,7 @@ namespace HairSalon.Api.Controllers.v1
 
         //PUT: api/Appointments/5
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("appointment/{id}")]
         [Authorize]
         public async Task<IActionResult> PutAppointment(AppointmentUpdateModel appointment)
         {
@@ -139,7 +139,7 @@ namespace HairSalon.Api.Controllers.v1
 
         //POST: api/Appointments
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost("appointment")]
         [Authorize]
         public async Task<ActionResult<Appointment>> PostAppointment(AppointmentCreateModel appointment)
         {
