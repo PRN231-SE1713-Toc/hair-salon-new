@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using HairSalon.Core.Contracts.Services;
 using HairSalon.Service;
 using HairSalon.Core;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace HairSalon.Api.Extensions
 {
@@ -57,6 +60,29 @@ namespace HairSalon.Api.Extensions
                 var xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 opt.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
             });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration["JwtSettings:Issuer"],
+                    ValidAudience = configuration["JwtSettings:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"]))
+                };
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Customer", policy => policy.RequireRole("Customer"));
+                options.AddPolicy("Employee", policy => policy.RequireRole("Employee"));
+                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+            });
+
 
             services.AddCors(opt =>
             {
