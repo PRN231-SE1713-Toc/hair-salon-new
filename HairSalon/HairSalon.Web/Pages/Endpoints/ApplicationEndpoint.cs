@@ -23,6 +23,9 @@
         public const string EmployeeGetAllEndPoint = "https://localhost:7200/api/Employees/employees";
         public const string EmployeeGetByIdEndPoint = "https://localhost:7200/api/Employees/employees/";
 
+        // EmployeeSchedule endpoints
+        public const string EmployeeScheduleGetAllEndpoint = Domain + "schedules";
+
         // Hair service endpoints
         public const string GetHairServiceEndpoint = Domain + "hair-services";
 

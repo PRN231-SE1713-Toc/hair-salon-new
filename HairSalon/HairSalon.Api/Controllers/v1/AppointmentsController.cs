@@ -6,6 +6,7 @@ using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Commons;
 using HairSalon.Core.Dtos.Responses;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HairSalon.Api.Controllers.v1
 {
@@ -25,6 +26,7 @@ namespace HairSalon.Api.Controllers.v1
        /// </summary>
        /// <returns></returns>
        [HttpGet("appointments")]
+       [Authorize]
        [ProducesResponseType(StatusCodes.Status200OK)]
        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<List<AppointmentViewResponse>>> GetAppointments()
@@ -47,6 +49,7 @@ namespace HairSalon.Api.Controllers.v1
         /// <param name="id">Appointment's id</param>
         /// <returns></returns>
         [HttpGet("appointments/{id}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AppointmentViewResponse>> GetAppointment(int id)
@@ -66,6 +69,7 @@ namespace HairSalon.Api.Controllers.v1
         }
 
         [HttpGet("appointments/customerId/{id}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AppointmentViewResponse>> GetAppointmentbyCustomerId(int id, int status)
@@ -86,6 +90,7 @@ namespace HairSalon.Api.Controllers.v1
         }
 
         [HttpGet("appointments/stylistId/{id}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AppointmentViewResponse>> GetAppointmentbyStylistId(int id, int status)
@@ -107,6 +112,7 @@ namespace HairSalon.Api.Controllers.v1
         //PUT: api/Appointments/5
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutAppointment(AppointmentUpdateModel appointment)
         {
             try
@@ -134,6 +140,7 @@ namespace HairSalon.Api.Controllers.v1
         //POST: api/Appointments
         //To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Appointment>> PostAppointment(AppointmentCreateModel appointment)
         {
             try
@@ -160,6 +167,7 @@ namespace HairSalon.Api.Controllers.v1
 
         //DELETE: api/Appointments/5
         [HttpDelete("appointment/{id}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteAppointment(int id)

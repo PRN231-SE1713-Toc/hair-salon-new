@@ -7,23 +7,48 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
+using HairSalon.Core.Commons;
+using HairSalon.Core.Dtos.Responses;
 
 namespace HairSalon.Web.Pages.EmployeeSchedules
 {
     public class IndexModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public IndexModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public IndexModel(HttpClient httpClient)
         {
-            _context = context;
+            _httpClient = httpClient;
         }
 
-        public IList<EmployeeSchedule> EmployeeSchedule { get; set; } = default!;
+        public List<EmployeeScheduleResponse> Schedules { get; set; } = new();
+        public string Message { get; set; } = string.Empty;
 
         public async Task OnGetAsync()
         {
-            EmployeeSchedule = await _context.EmployeeSchedules.ToListAsync();
+            var response = await _httpClient.GetAsync("https://localhost:7200/api/v1/prn231-hairsalon/schedules");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponseModel<List<EmployeeScheduleResponse>>>();
+
+                if (apiResponse.Response != null)
+                {
+                    Schedules = apiResponse.Response;
+                    Message = apiResponse.Message;
+                    Console.WriteLine("Schedules fetched successfully.");
+                }
+                else
+                {
+                    Message = "No schedules found!";
+                    Console.WriteLine("No schedules found in response.");
+                }
+            }
+            else
+            {
+                Message = "Failed to load schedules.";
+                Console.WriteLine("Failed to load schedules, API call unsuccessful.");
+            }
         }
     }
 }

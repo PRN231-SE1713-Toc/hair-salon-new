@@ -1,43 +1,43 @@
-﻿@page
+﻿@page "{id:int}"
 @model HairSalon.Web.Pages.EmployeeSchedules.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Schedule Details";
 }
 
-<h1>Details</h1>
+<h1>Schedule Details</h1>
 
-<div>
-    <h4>EmployeeSchedule</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.EmployeeSchedule.WorkingDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.EmployeeSchedule.WorkingDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.EmployeeSchedule.WorkingStartTime)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.EmployeeSchedule.WorkingStartTime)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.EmployeeSchedule.WorkingEndTime)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.EmployeeSchedule.WorkingEndTime)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.EmployeeSchedule.Employee)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.EmployeeSchedule.Employee.Name)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.EmployeeSchedule.Id">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
-</div>
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <p>@Model.Message</p>
+}
+
+@if (Model.Schedule != null)
+{
+    <table class="table">
+        <tr>
+            <th>ID</th>
+            <td>@Model.Schedule.Id</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>@Model.Schedule.Name</td>
+        </tr>
+        <tr>
+            <th>Working Date</th>
+            <td>@Model.Schedule.WorkingDate</td>
+        </tr>
+        <tr>
+            <th>Start Time</th>
+            <td>@Model.Schedule.WorkingStartTime</td>
+        </tr>
+        <tr>
+            <th>End Time</th>
+            <td>@Model.Schedule.WorkingEndTime</td>
+        </tr>
+    </table>
+}
+else
+{
+    <p>No schedule details available.</p>
+}

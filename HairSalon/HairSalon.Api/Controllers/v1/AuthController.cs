@@ -29,7 +29,7 @@ namespace HairSalon.Api.Controllers.v1
             var customer = await _customerService.CheckLoginForCustomer(requestModel.Email, requestModel.Password);
             if (customer is null) return NotFound(new ApiResponseModel<string>()
             {
-                StatusCode = System.Net.HttpStatusCode.NotFound,
+                StatusCode = HttpStatusCode.NotFound,
                 Message = "User not found"
             });
 

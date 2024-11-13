@@ -7,37 +7,37 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
+using HairSalon.Core.Dtos.Responses;
+using HairSalon.Core.Commons;
+using System.Net;
 
 namespace HairSalon.Web.Pages.EmployeeSchedules
 {
     public class DetailsModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public DetailsModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public DetailsModel(HttpClient httpClient)
         {
-            _context = context;
+            _httpClient = httpClient;
         }
 
-        public EmployeeSchedule EmployeeSchedule { get; set; } = default!;
+        public EmployeeScheduleResponse? Schedule { get; set; }
+        public string Message { get; set; } = string.Empty;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task OnGetAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var response = await _httpClient.GetFromJsonAsync<ApiResponseModel<EmployeeScheduleResponse>>($"https://localhost:7200/api/v1/prn231-hairsalon/schedules/{id}");
 
-            var employeeschedule = await _context.EmployeeSchedules.FirstOrDefaultAsync(m => m.Id == id);
-            if (employeeschedule == null)
+            if (response != null && response.StatusCode == HttpStatusCode.OK && response.Response != null)
             {
-                return NotFound();
+                Schedule = response.Response;
+                Message = response.Message;
             }
             else
             {
-                EmployeeSchedule = employeeschedule;
+                Message = response?.Message ?? "Schedule not found!";
             }
-            return Page();
         }
     }
 }

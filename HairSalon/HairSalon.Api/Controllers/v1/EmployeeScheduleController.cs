@@ -2,6 +2,7 @@
 using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -18,6 +19,7 @@ namespace HairSalon.Api.Controllers.v1
 
         //GET: api/Schedule
         [HttpGet("schedules")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<EmployeeScheduleResponse>>> GetSchedule()
@@ -44,6 +46,7 @@ namespace HairSalon.Api.Controllers.v1
 
         //GET: api/employee/{id}/schedules
         [HttpGet("employee/{id}/schedules")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ApiResponseModel<List<EmployeeScheduleResponse>>>> GetScheduleOfEmployee(int id)
@@ -71,6 +74,7 @@ namespace HairSalon.Api.Controllers.v1
 
         //GET: api/Schedule/{id}
         [HttpGet("schedules/{id}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<EmployeeScheduleResponse>> GetSchedule(int id)
@@ -91,6 +95,7 @@ namespace HairSalon.Api.Controllers.v1
 
         // UPDATE
         [HttpPut("schedule/{id}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -113,6 +118,7 @@ namespace HairSalon.Api.Controllers.v1
 
         // CREATE
         [HttpPost("schedules")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesErrorResponseType(typeof(ApiResponseModel<string>))]
@@ -150,6 +156,7 @@ namespace HairSalon.Api.Controllers.v1
 
         //DELETE
         [HttpDelete("schedule/{id}")]
+        [Authorize]  
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -186,6 +193,30 @@ namespace HairSalon.Api.Controllers.v1
                 Message = "Schedule deleted successfully.",
                 Response = "Success"
             });
+        }
+
+        /// <summary>
+        /// Get available stylists for a given date and time range
+        /// </summary>
+        /// <param name="appointmentDate"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <returns></returns>
+        [HttpGet("date/{appointmentDate}/stylists")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAvailableStylists(DateOnly appointmentDate, TimeOnly? startTime, TimeOnly? endTime)
+        {
+            var stylists = await _employeeScheduleService.GetAvailableStylists(appointmentDate, startTime, endTime);
+            if (!stylists.Any())
+            {
+                return NotFound(new ApiResponseModel<string>
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = "No available stylists found!"
+                });
+            }
+            return Ok(stylists);
         }
     }
 }
