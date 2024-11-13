@@ -40,6 +40,8 @@ namespace HairSalon.Service
                 .ForMember(dest => dest.WorkingEndTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.WorkingEndTime)));
 
             CreateMap<AppointmentService, AppointmentServiceDto>().ReverseMap();
+
+            CreateMap<Employee, StylistResponseModel>();
         }
 
         private TimeOnly TryParseTime(string timeString)

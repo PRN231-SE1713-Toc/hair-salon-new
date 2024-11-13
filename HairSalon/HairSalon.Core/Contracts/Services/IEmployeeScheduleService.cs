@@ -2,11 +2,6 @@
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
 using HairSalon.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HairSalon.Core.Contracts.Services
 {
@@ -20,5 +15,6 @@ namespace HairSalon.Core.Contracts.Services
         Task<ApiResponseModel<List<EmployeeScheduleResponse>>> GetScheduleOfEmployee(int empId);
         Task<ApiResponseModel<EmployeeScheduleResponse?>> CreateSchedule(CreateEmployeeScheduleModel createScheduleDto);
 
+        Task<IList<StylistResponseModel>> GetAvailableStylists(DateOnly date, TimeOnly? from, TimeOnly? to);
     }
 }

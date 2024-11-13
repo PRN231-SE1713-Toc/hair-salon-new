@@ -187,5 +187,29 @@ namespace HairSalon.Api.Controllers.v1
                 Response = "Success"
             });
         }
+
+        /// <summary>
+        /// Get available stylists for a given date and time range
+        /// </summary>
+        /// <param name="appointmentDate"></param>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <returns></returns>
+        [HttpGet("date/{appointmentDate}/stylists")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAvailableStylists(DateOnly appointmentDate, TimeOnly? startTime, TimeOnly? endTime)
+        {
+            var stylists = await _employeeScheduleService.GetAvailableStylists(appointmentDate, startTime, endTime);
+            if (!stylists.Any())
+            {
+                return NotFound(new ApiResponseModel<string>
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = "No available stylists found!"
+                });
+            }
+            return Ok(stylists);
+        }
     }
 }
