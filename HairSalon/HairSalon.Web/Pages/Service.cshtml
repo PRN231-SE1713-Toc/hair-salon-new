@@ -7,39 +7,39 @@
 <div class="bradcam_area breadcam_bg overlay">
     <div class="container">
         <div class="row">
-            <div class="col-lg-12">
-                <h3>Services</h3>
+            <div class="col-lg-12 text-center">
+                <h3 class="text-white">Services</h3>
             </div>
         </div>
     </div>
 </div>
 
-<div class="service_area">
+<div class="service_area py-5">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-6 col-md-10">
-                <div class="section_title text-center mb-55">
-                    <h3>Our Services</h3>
+                <div class="section_title text-center mb-5">
+                    <h3 class="text-uppercase">Our Services</h3>
                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore</p>
                 </div>
             </div>
         </div>
-        <div class="row justify-content-center">
+        <div class="row justify-content-center align-items-stretch">
             @if (Model.Services != null && Model.Services.Count > 0)
             {
                 @foreach (var service in Model.Services)
                 {
-                    <div class="col-lg-4 col-md-6">
-                        <div class="single_service">
+                    <div class="col-lg-4 col-md-6 mb-4 d-flex align-items-stretch">
+                        <div class="card single_service h-100 w-100 shadow-sm border-0">
                             <div class="service_thumb">
-                                <img src="~/img/service/1.png" alt="@service.Name">
+                                <img src="~/img/service/1.png" alt="@service.Name" class="img-fluid">
                             </div>
-                            <div class="service_content text-center">
-                                <div class="icon">
+                            <div class="service_content text-center d-flex flex-column p-4">
+                                <div class="icon mb-3">
                                     <i class="flaticon-shave"></i>
                                 </div>
-                                <h3>@service.Name</h3>
-                                <p>@service.Description</p>
+                                <h4 class="text-primary mb-3">@service.Name</h4>
+                                <p class="flex-grow-1">@service.Description</p>
                                 <p><strong>Duration:</strong> @service.EstimatedDuration</p>
                                 <p><strong>Price:</strong> $@service.Price</p>
                             </div>
@@ -49,57 +49,56 @@
             }
             else
             {
-                <p>No services available.</p>
+                <p class="text-center">No services available.</p>
             }
         </div>
     </div>
 </div>
 
-<div class="make_apppointment_area">
+<div class="make_apppointment_area py-5">
     <div class="container">
         <div class="row">
-            <div class="col-lg-12">
-                <div class="section_title pl-68">
-                    <h3>Make an Appointment</h3>
+            <div class="col-lg-12 text-center mb-5">
+                <div class="section_title">
+                    <h3 class="text-uppercase">Make an Appointment</h3>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-7">
-                <div class="appoint_ment_form pl-68">
+                <div class="appoint_ment_form">
                     <form action="#">
-                        <div class="single_field">
-                            <input type="text" placeholder="Name">
+                        <div class="single_field mb-3">
+                            <input type="text" class="form-control" placeholder="Name">
                         </div>
-                        <div class="single_field">
-                            <input type="text" placeholder="Email">
+                        <div class="single_field mb-3">
+                            <input type="email" class="form-control" placeholder="Email">
                         </div>
-                        <div class="single_field m-0">
-                            <textarea id="" cols="30" rows="10" placeholder="Message"></textarea>
+                        <div class="single_field mb-3">
+                            <textarea class="form-control" cols="30" rows="5" placeholder="Message"></textarea>
                         </div>
-                        <p>
-                            I’m available for commissions and collaborations, and i’m <br>
-                            excited to hear from you about new projects.
+                        <p class="text-muted mb-4">
+                            I’m available for commissions and collaborations, and I’m excited to hear from you about new projects.
                         </p>
                         <div class="form_btn">
-                            <button class="boxed-btn3" type="submit">Send message</button>
+                            <button class="btn btn-primary" type="submit">Send message</button>
                         </div>
                     </form>
                 </div>
             </div>
             <div class="col-lg-4 offset-lg-1">
                 <div class="appointMent_info">
-                    <div class="single_appontment">
+                    <div class="single_appontment mb-4">
                         <h4>Visit our studio at</h4>
                         <p>
-                            221B Baker Street, P. O Box 3 Park Road,
+                            221B Baker Street, P. O Box 3 Park Road,<br>
                             USA - 215852
                         </p>
                     </div>
-                    <div class="single_appontment">
+                    <div class="single_appontment mb-4">
                         <h4>Message us</h4>
                         <p>
-                            Support@colorlib.net <br>
+                            Support@colorlib.net<br>
                             (+68) 120034509
                         </p>
                     </div>
@@ -118,4 +117,5 @@
             </div>
         </div>
     </div>
-</div>  
+</div>
+        

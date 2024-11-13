@@ -81,21 +81,23 @@
                 </div>
             </div>
         </div>
-        <div class="row justify-content-center">
+        <div class="row justify-content-center align-items-stretch">
             @if (Model.Services != null && Model.Services.Count > 0)
             {
                 @foreach (var service in Model.Services)
                 {
-                    <div class="col-lg-4 col-md-6">
-                        <div class="single_service">
-                            <div class="service_content text-center">
+                    <div class="col-lg-4 col-md-6 mb-4 d-flex align-items-stretch">
+                        <div class="card single_service h-100 w-100 shadow-sm">
+                            <div class="service_content text-center d-flex flex-column">
                                 <div class="service_thumb">
-                                    <img src="img/service/1.png" alt="">
+                                    <img src="img/service/1.png" alt="@service.Name" class="img-fluid">
                                 </div>
-                                <h3>@service.Name</h3>
-                                <p>@service.Description</p>
-                                <p><strong>Duration:</strong> @service.EstimatedDuration</p>
-                                <p><strong>Price:</strong> $@service.Price</p>
+                                <div class="mt-3 flex-grow-1">
+                                    <h4 class="text-primary">@service.Name</h4>
+                                    <p>@service.Description</p>
+                                    <p><strong>Duration:</strong> @service.EstimatedDuration</p>
+                                    <p><strong>Price:</strong> @service.Price</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -132,7 +134,7 @@
                             <div class="card-body text-center">
                                 <h4 class="card-title text-primary">@service.Name</h4>
                                 <p class="card-text"><strong>Estimated Duration:</strong> @service.EstimatedDuration</p>
-                                <p class="card-text"><strong>Price:</strong> $@service.Price</p>
+                                <p class="card-text"><strong>Price:</strong> @service.Price</p>
                                 <p class="card-text">@service.Description</p>
                             </div>
                         </div>

@@ -9,6 +9,7 @@ using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
 using HairSalon.Web.Pages.Endpoints;
 using HairSalon.Core.Dtos.Responses;
+using System.Net.Http.Headers;
 
 namespace HairSalon.Web.Pages.Appointments
 {
@@ -23,27 +24,34 @@ namespace HairSalon.Web.Pages.Appointments
         {
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
+
+            var token = _httpContextAccessor.HttpContext?.Session.GetString("CustomerToken");
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
 
-        public IList<AppointmentViewResponse> Appointment { get;set; } = default!;
+        public IList<AppointmentViewResponse> Appointment { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
-            int? customerId = _httpContextAccessor.HttpContext.Session.GetInt32("CustomerId");
+            int? customerId = _httpContextAccessor.HttpContext?.Session.GetInt32("CustomerId");
             if (customerId == null)
             {
                 Appointment = new List<AppointmentViewResponse>();
                 return;
             }
+
+            var result = await _httpClient.GetAsync(ApplicationEndpoint.AppointmentGetByCustomerIdEndPoint + customerId.ToString() + "?status=-1");
+
+            if (result.IsSuccessStatusCode)
+            {
+                Appointment = await result.Content.ReadFromJsonAsync<List<AppointmentViewResponse>>() ?? new List<AppointmentViewResponse>();
+            }
             else
             {
-                var result = await _httpClient.GetAsync(ApplicationEndpoint.AppointmentGetByCustomerIdEndPoint
-                                                            + customerId.ToString() + "?status=-1");
-
-                if (result.IsSuccessStatusCode)
-                {
-                    Appointment = await result.Content.ReadFromJsonAsync<List<AppointmentViewResponse>>();
-                }
+                Appointment = new List<AppointmentViewResponse>();
             }
         }
     }
