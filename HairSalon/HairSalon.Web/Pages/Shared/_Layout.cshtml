@@ -22,12 +22,14 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom" id="sticky-header">
             <div class="container">
                 <div class="d-flex w-100 align-items-center justify-content-between">
-
+                    <!-- Logo Section -->
                     <div class="logo-img">
                         <a asp-page="/Index">
                             <img src="~/img/logo.png" alt="Logo">
                         </a>
                     </div>
+
+                    <!-- Navigation Links -->
                     <ul class="navbar-nav d-flex align-items-center">
                         <li class="nav-item">
                             <a class="nav-schedule" asp-page="/EmployeeSchedules/Index">Schedules</a>
@@ -54,14 +56,17 @@
                             <a class="nav-link" asp-page="/Contact">Contact</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-login" asp-page="/Login">Login</a>
+                            <a class="nav-login btn btn-outline-primary ms-2" asp-page="/Login">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-dashboard btn btn-primary ms-2" asp-page="/DashBoard">Dashboard</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
-
     </header>
+
 
     <div class="container">
         <main role="main" class="pb-3">
