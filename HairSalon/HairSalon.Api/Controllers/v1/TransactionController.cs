@@ -1,5 +1,6 @@
 ﻿using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HairSalon.Api.Controllers.v1
@@ -24,6 +25,7 @@ namespace HairSalon.Api.Controllers.v1
         /// Create url
         /// </summary>
         [HttpPost("payment/vnpay")]
+        [Authorize]
         public async Task<IActionResult> AddPayment(int appointmentId, int userId)
         {
             var user = await _customerService.GetCustomerById(userId);

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HairSalon.Api.Controllers.v1
 {
@@ -40,6 +41,7 @@ namespace HairSalon.Api.Controllers.v1
         // PUT: api/Employees/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("employee/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutEmployee(int id, Employee employee)
         {
             if (id != employee.Id)
@@ -71,6 +73,7 @@ namespace HairSalon.Api.Controllers.v1
         // POST: api/Employees
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("employee")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
         {
             _context.Employees.Add(employee);
@@ -81,6 +84,7 @@ namespace HairSalon.Api.Controllers.v1
 
         // DELETE: api/Employees/5
         [HttpDelete("employee/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
             var employee = await _context.Employees.FindAsync(id);

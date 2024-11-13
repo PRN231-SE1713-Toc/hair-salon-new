@@ -2,6 +2,7 @@
 using HairSalon.Core.Contracts.Services;
 using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -18,6 +19,7 @@ namespace HairSalon.Api.Controllers.v1
 
         //GET: api/Schedule
         [HttpGet("schedules")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<EmployeeScheduleResponse>>> GetSchedule()
@@ -44,6 +46,7 @@ namespace HairSalon.Api.Controllers.v1
 
         //GET: api/employee/{id}/schedules
         [HttpGet("employee/{id}/schedules")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ApiResponseModel<List<EmployeeScheduleResponse>>>> GetScheduleOfEmployee(int id)
@@ -71,6 +74,7 @@ namespace HairSalon.Api.Controllers.v1
 
         //GET: api/Schedule/{id}
         [HttpGet("schedules/{id}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<EmployeeScheduleResponse>> GetSchedule(int id)
@@ -91,6 +95,7 @@ namespace HairSalon.Api.Controllers.v1
 
         // UPDATE
         [HttpPut("schedule/{id}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -113,6 +118,7 @@ namespace HairSalon.Api.Controllers.v1
 
         // CREATE
         [HttpPost("schedules")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesErrorResponseType(typeof(ApiResponseModel<string>))]
@@ -150,6 +156,7 @@ namespace HairSalon.Api.Controllers.v1
 
         //DELETE
         [HttpDelete("schedule/{id}")]
+        [Authorize]  
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
