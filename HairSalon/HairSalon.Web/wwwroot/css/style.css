@@ -6213,5 +6213,9 @@ h6 {
 }
 
 #sticky-header .nav-link {
-    color: #ffffff !important; /* Màu trắng */
+    color: #ffffff !important; 
+}
+
+.p-1 {
+    color: #ffffff !important; 
 }

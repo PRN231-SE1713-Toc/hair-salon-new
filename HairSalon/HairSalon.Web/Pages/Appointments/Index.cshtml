@@ -9,7 +9,7 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-page="CreateService">Book new Appointment</a>
+    <a asp-page="CreateService">Book new appointment</a>
 </p>
 <div>
     status
@@ -23,58 +23,68 @@
     </ul>
 </li>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Appointment[0].AppointmentDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Appointment[0].StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Appointment[0].EndTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Appointment[0].StylistName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Appointment[0].Note)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Appointment[0].AppointmentStatus)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Appointment) {
-    if (item.AppointmentStatus == "VERIFIED"){
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.AppointmentDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndTime)
-            </td>
-            <td>
-                <a asp-page="./StylistDetail" asp-route-stylistId="@item.StylistId" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.StylistName)</a>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Note)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AppointmentStatus)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}}
-    </tbody>
-</table>
+@if (Model.Appointment != null && Model.Appointment.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Appointment[0].AppointmentDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Appointment[0].StartTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Appointment[0].EndTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Appointment[0].StylistName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Appointment[0].Note)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Appointment[0].AppointmentStatus)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Appointment)
+            {
+                if (item.AppointmentStatus == "VERIFIED")
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AppointmentDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StartTime)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EndTime)
+                        </td>
+                        <td>
+                            <a asp-page="./StylistDetail" asp-route-stylistId="@item.StylistId" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.StylistName)</a>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Note)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.AppointmentStatus)
+                        </td>
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                            <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No appointments available.</p>
+}
