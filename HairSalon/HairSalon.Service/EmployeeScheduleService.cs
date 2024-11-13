@@ -15,8 +15,6 @@ namespace HairSalon.Service
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
-
-
         // DELETE
         public async Task<ApiResponseModel<bool>> DeleteSchedule(EmployeeSchedule employeeSchedule)
         {
@@ -55,8 +53,6 @@ namespace HairSalon.Service
             }
         }
 
-
-
         // GET ALL
         public async Task<ApiResponseModel<List<EmployeeScheduleResponse>>> GetSchedule()
         {
@@ -86,7 +82,6 @@ namespace HairSalon.Service
                 };
             }
         }
-
 
         // GET By ID
         public async Task<ApiResponseModel<EmployeeScheduleResponse?>> GetSchedule(int id)
@@ -128,13 +123,10 @@ namespace HairSalon.Service
             }
         }
 
-
-
         public async Task<EmployeeSchedule?> GetScheduleEntityById(int id)
         {
             return await _unitOfWork.EmployeeScheduleRepository.GetAsync(es => es.Id == id);
         }
-
 
         // UPDATE
         public async Task<ApiResponseModel<EmployeeScheduleResponse?>> UpdateSchedule(int id, UpdateEmployeeSchedule updatedSchedule)
@@ -176,7 +168,6 @@ namespace HairSalon.Service
             }
         }
 
-
         public async Task<ApiResponseModel<List<EmployeeScheduleResponse>>> GetScheduleOfEmployee(int empId)
         {
             try
@@ -205,7 +196,6 @@ namespace HairSalon.Service
                 };
             }
         }
-
 
         public async Task<ApiResponseModel<EmployeeScheduleResponse?>> CreateSchedule(CreateEmployeeScheduleModel createScheduleDto)
         {
@@ -274,5 +264,39 @@ namespace HairSalon.Service
             }
         }
 
+        public async Task<IList<StylistResponseModel>> GetAvailableStylists(DateOnly date, TimeOnly from, TimeOnly to)
+        {
+            var stylists = await _unitOfWork.EmployeeScheduleRepository.GetAll()
+                .AsNoTracking()
+                .Include(es => es.Employee)
+                .Where(es => es.WorkingDate == date && es.WorkingStartTime >= from && es.WorkingEndTime <= to)
+                .Select(es => es.Employee)
+                .ToListAsync();
+            return _mapper.Map<IList<StylistResponseModel>>(stylists);
+        }
+
+        public async Task<IList<StylistResponseModel>> GetAvailableStylists(DateOnly date, TimeOnly? from, TimeOnly? to)
+        {
+            if (from.HasValue && to.HasValue)
+            {
+                var stylists = await _unitOfWork.EmployeeScheduleRepository.GetAll()
+                    .AsNoTracking()
+                    .Include(es => es.Employee)
+                    .Where(es => es.WorkingDate == date && es.WorkingStartTime >= from && es.WorkingEndTime <= to)
+                    .Select(es => es.Employee)
+                    .ToListAsync();
+                return _mapper.Map<IList<StylistResponseModel>>(stylists);
+            }
+            else
+            {
+                var stylists = await _unitOfWork.EmployeeScheduleRepository.GetAll()
+                    .AsNoTracking()
+                    .Include(es => es.Employee)
+                    .Where(es => es.WorkingDate == date)
+                    .Select(es => es.Employee)
+                    .ToListAsync();
+                return _mapper.Map<IList<StylistResponseModel>>(stylists);
+            }
+        }
     }
 }
