@@ -292,7 +292,7 @@ namespace HairSalon.Service
                 var stylists = await _unitOfWork.EmployeeScheduleRepository.GetAll()
                     .AsNoTracking()
                     .Include(es => es.Employee)
-                    .Where(es => es.WorkingDate == date)
+                    .Where(es => es.WorkingDate != date)
                     .Select(es => es.Employee)
                     .ToListAsync();
                 return _mapper.Map<IList<StylistResponseModel>>(stylists);

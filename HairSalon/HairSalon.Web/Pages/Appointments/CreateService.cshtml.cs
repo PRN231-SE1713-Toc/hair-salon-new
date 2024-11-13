@@ -66,10 +66,39 @@ namespace HairSalon.Web.Pages.Appointments
                 ModelState.AddModelError(string.Empty, "Must select service(s).");
                 return Page();
             }
-
-            TempData["AppointmentDatr"] = JsonConvert.SerializeObject(date);
+            var servicesResponse = await _httpClient.GetAsync(ApplicationEndpoint.GetHairServiceEndpoint);
+            services = await servicesResponse.Content.ReadFromJsonAsync<List<Core.Entities.Service>>();
+            var selectedServices = services.Where(s => selectedServiceIds.Contains(s.Id)).ToList();
+            int TotalMinute = 0;
+            if (selectedServices.Any())
+            {
+                foreach (var service in selectedServices) 
+                {
+                    TotalMinute += Int32.Parse(service.Duration.Substring(0, 2));
+                }
+            }
+            endTime = endTime.AddMinutes(30);
+            //var result = await _httpClient.GetAsync(ApplicationEndpoint.EmployeeGetAvailableEndPoint
+            //    + date.Date
+            //    + "/Stylists"
+            //    + "?startTime=" + startTime + "&endTime=" + startTime.AddMinutes(TotalMinute)
+            //    );
+            var result = await _httpClient.GetAsync(ApplicationEndpoint.EmployeeGetAllEndPoint);
+            if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var stylists = result.Content.ReadFromJsonAsync<List<Employee>>().Result;
+                //availableStylist = stylists;
+                ViewData[""] = new SelectList(stylists, "Id", "Name");
+            }
+            else if (result.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                await Populate();
+                ModelState.AddModelError(string.Empty, "Appointment Time is unavailable.");
+                return Page();
+            }
+            TempData["AppointmentDate"] = JsonConvert.SerializeObject(date);
             TempData["AppointmentStartTime"] = JsonConvert.SerializeObject(startTime);
-            TempData["AppointmentEndTime"] = JsonConvert.SerializeObject(endTime);
+            TempData["AppointmentEndTime"] = JsonConvert.SerializeObject(startTime.AddMinutes(TotalMinute));
             TempData["selectedServiceIds"] = JsonConvert.SerializeObject(selectedServiceIds);
 
             return RedirectToPage("./Create");
@@ -86,6 +115,10 @@ namespace HairSalon.Web.Pages.Appointments
                 Name = s.Name + " (" + s.Duration + ")",
                 Duration = formatDurationToNumber(s.Duration) ,
             }).ToList();
+            TempData["AppointmentDate"] = TempData["AppointmentDate"];
+            TempData["AppointmentStartTime"] = TempData["AppointmentStartTime"];
+            TempData["AppointmentEndTime"] = TempData["AppointmentEndTime"];
+            TempData["selectedServiceIds"] = TempData["selectedServiceIds"];
         }
 
         private int formatDurationToNumber(string duration)
