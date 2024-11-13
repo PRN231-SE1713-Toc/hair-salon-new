@@ -1,0 +1,115 @@
+﻿@page
+@model HairSalon.Web.Pages.Appointments.CreateServiceModel
+@{
+    ViewData["Title"] = "CreateService";
+    Layout = "_Layout";
+}
+<h1>Create</h1>
+
+<h4>Appointment</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="date" class="control-label"></label>
+                <input asp-for="date" class="form-control" type="date" min="now" />
+                <span asp-validation-for="date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="startTime" class="control-label"></label>
+                <input asp-for="startTime" class="form-control" type="time" id="startTime" />
+                <span asp-validation-for="startTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="endTime" class="control-label">End Time</label>
+                <input asp-for="endTime" class="form-control" type="time" id="endTime" disabled />
+                <span asp-validation-for="endTime" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Select Services</label>
+                <div>
+                    @foreach (var service in Model.serviceViews)
+                    {
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   value="@service.Id"
+                                   id="service_@service.Id"
+                                   name="selectedServiceIds"
+                                   data-duration="@service.Duration" />
+                            <label class="form-check-label" for="service_@service.Id">
+                                @service.Name
+                            </label>
+                        </div>
+                    }
+                </div>
+                <span asp-validation-for="selectedServiceIds" class="text-danger"></span>
+            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        updateEndTime();
+
+        const checkboxes = document.querySelectorAll('input[name="selectedServiceIds"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                updateEndTime();
+            });
+        });
+
+        const startTimeInput = document.getElementById('startTime');
+        startTimeInput.addEventListener('change', function () {
+            updateEndTime();
+        });
+
+        const today = new Date();
+        const day = String(today.getDate()).padStart(2, '0');
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const year = today.getFullYear();
+
+        const formattedDate = `${year}-${month}-${day}`;
+
+        const dateInput = document.getElementById('date');
+        dateInput.setAttribute('min', formattedDate);
+    });
+
+    function updateEndTime() {
+        const startTimeInput = document.getElementById('startTime');
+        const endTimeInput = document.getElementById('endTime');
+
+        if (!startTimeInput.value) return;
+
+        let startTime = new Date("1970-01-01T" + startTimeInput.value + "Z");
+
+        let totalDuration = 0;
+
+        const checkboxes = document.querySelectorAll('input[name="selectedServiceIds"]:checked');
+        checkboxes.forEach(checkbox => {
+            const serviceDuration = parseFloat(checkbox.getAttribute('data-duration'));
+            totalDuration += serviceDuration;
+        });
+
+        startTime.setMinutes(startTime.getMinutes() + totalDuration);
+
+        endTimeInput.value = startTime.toISOString().substr(11, 5); // Format as HH:mm
+    }
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

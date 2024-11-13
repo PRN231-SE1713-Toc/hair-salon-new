@@ -1,15 +1,28 @@
 ﻿@page
 @model HairSalon.Web.Pages.Appointments.IndexModel
-
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor﻿
 @{
     ViewData["Title"] = "Index";
+    Layout = "_Layout";
 }
 
 <h1>Index</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="CreateService">Book new Appointment</a>
 </p>
+<div>
+    status
+<li class="nav-item dropdown me-3">
+    <a class="nav-link dropdown-toggle" href="#" id="blogDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        All
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="blogDropdown">
+        <li><a class="dropdown-item" asp-page="/Blog">Blog</a></li>
+        <li><a class="dropdown-item" asp-page="/SingleBlog">Single Blog</a></li>
+    </ul>
+</li>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -36,6 +49,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model.Appointment) {
+    if (item.AppointmentStatus == "VERIFIED"){
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.AppointmentDate)
@@ -61,6 +75,6 @@
                 <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
-}
+}}
     </tbody>
 </table>

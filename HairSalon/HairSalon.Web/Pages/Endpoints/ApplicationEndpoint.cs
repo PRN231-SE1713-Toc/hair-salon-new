@@ -20,6 +20,7 @@
         public const string AppointmentGetByIdEndPoint = Domain + "appointments/";
 
         // Employee endpoints
+        public const string EmployeeGetAllEndPoint = "https://localhost:7200/api/Employees/employees";
         public const string EmployeeGetByIdEndPoint = "https://localhost:7200/api/Employees/employees/";
 
         // EmployeeSchedule endpoints

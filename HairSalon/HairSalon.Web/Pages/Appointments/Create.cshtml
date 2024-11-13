@@ -1,8 +1,10 @@
 ﻿@page
 @model HairSalon.Web.Pages.Appointments.CreateModel
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = "Create";
+    Layout = "_Layout";
 }
 
 <h1>Create</h1>
@@ -14,21 +16,17 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Appointment.CustomerId" class="control-label"></label>
-                <select asp-for="Appointment.CustomerId" class ="form-control" asp-items="ViewBag.CustomerId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Appointment.StylistId" class="control-label"></label>
+                <label asp-for="Appointment.StylistId" class="control-label">Stylist</label>
                 <select asp-for="Appointment.StylistId" class ="form-control" asp-items="ViewBag.StylistId"></select>
             </div>
             <div class="form-group">
                 <label asp-for="Appointment.AppointmentDate" class="control-label"></label>
-                <input asp-for="Appointment.AppointmentDate" class="form-control" />
+                <input asp-for="Appointment.AppointmentDate" class="form-control" type="date" />
                 <span asp-validation-for="Appointment.AppointmentDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Appointment.StartTime" class="control-label"></label>
-                <input asp-for="Appointment.StartTime" class="form-control" />
+                <input asp-for="Appointment.StartTime" class="form-control" type="time"/>
                 <span asp-validation-for="Appointment.StartTime" class="text-danger"></span>
             </div>
             <div class="form-group">

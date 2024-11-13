@@ -1,6 +1,7 @@
-﻿﻿
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor﻿
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,10 +57,21 @@
                             <a class="nav-link" asp-page="/Contact">Contact</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-login btn btn-outline-primary ms-2" asp-page="/Login">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-dashboard btn btn-primary ms-2" asp-page="/DashBoard">Dashboard</a>
+                            @if (HttpContextAccessor.HttpContext?.Session.GetInt32("CustomerId") != null ||
+                            HttpContextAccessor.HttpContext?.Session.GetInt32("EmpId") != null)
+                            {
+                                <a class="p-1">@(
+                                        HttpContextAccessor.HttpContext?.Session.GetString("CustomerName") ??
+                                        HttpContextAccessor.HttpContext?.Session.GetString("EmpName")
+                                    )</a>
+                                <!-- If session has data, you could show a Logout link or Profile link instead -->
+                                <a class="nav-login" asp-page="/Logout">Logout</a>
+                            }
+                            else
+                            {
+                                <!-- If session has no data, show Login link -->
+                                <a class="nav-login" asp-page="/Login">Login</a>
+                            }
                         </li>
                     </ul>
                 </div>
