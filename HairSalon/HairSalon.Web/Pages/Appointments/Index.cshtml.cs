@@ -25,7 +25,8 @@ namespace HairSalon.Web.Pages.Appointments
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
 
-            var token = _httpContextAccessor.HttpContext?.Session.GetString("CustomerToken");
+            var token = _httpContextAccessor.HttpContext?.Session.GetString("CustomerToken") ??
+                        _httpContextAccessor.HttpContext?.Session.GetString("EmpToken");
             if (!string.IsNullOrEmpty(token))
             {
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -37,17 +38,34 @@ namespace HairSalon.Web.Pages.Appointments
         public async Task OnGetAsync()
         {
             int? customerId = _httpContextAccessor.HttpContext?.Session.GetInt32("CustomerId");
-            if (customerId == null)
+            int? employeeId = _httpContextAccessor.HttpContext?.Session.GetInt32("EmpId");
+
+
+            if (customerId != null)
             {
-                Appointment = new List<AppointmentViewResponse>();
-                return;
+                var result = await _httpClient.GetAsync(ApplicationEndpoint.AppointmentGetByCustomerIdEndPoint + customerId.ToString() + "?status=1");
+
+                if (result.IsSuccessStatusCode)
+                {
+                    Appointment = await result.Content.ReadFromJsonAsync<List<AppointmentViewResponse>>() ?? new List<AppointmentViewResponse>();
+                }
+                else
+                {
+                    Appointment = new List<AppointmentViewResponse>();
+                }
             }
-
-            var result = await _httpClient.GetAsync(ApplicationEndpoint.AppointmentGetByCustomerIdEndPoint + customerId.ToString() + "?status=-1");
-
-            if (result.IsSuccessStatusCode)
+            else if (employeeId != null)
             {
-                Appointment = await result.Content.ReadFromJsonAsync<List<AppointmentViewResponse>>() ?? new List<AppointmentViewResponse>();
+                var result = await _httpClient.GetAsync(ApplicationEndpoint.AppointmentGetByStylistIdEndPoint + employeeId.ToString() + "?status=1");
+
+                if (result.IsSuccessStatusCode)
+                {
+                    Appointment = await result.Content.ReadFromJsonAsync<List<AppointmentViewResponse>>() ?? new List<AppointmentViewResponse>();
+                }
+                else
+                {
+                    Appointment = new List<AppointmentViewResponse>();
+                }
             }
             else
             {

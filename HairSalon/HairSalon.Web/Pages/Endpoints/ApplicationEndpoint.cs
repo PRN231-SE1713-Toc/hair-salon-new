@@ -20,6 +20,7 @@
         // Appointment endpoints
         public const string AppointmentGetAllEndPoint = Domain + "appointments";
         public const string AppointmentGetByCustomerIdEndPoint = Domain + "appointments/customerId/";
+        public const string AppointmentGetByStylistIdEndPoint = Domain + "appointments/stylistId/";
         public const string AppointmentGetByIdEndPoint = Domain + "appointments/";
 
         // Employee endpoints

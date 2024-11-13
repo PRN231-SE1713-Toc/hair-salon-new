@@ -36,7 +36,7 @@ namespace HairSalon.Api.Extensions
                 opt.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme()
                 {
                     Name = "Authorization",
-                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = Microsoft.OpenApi.Models.ParameterLocation.Header,
@@ -79,8 +79,9 @@ namespace HairSalon.Api.Extensions
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Customer", policy => policy.RequireRole("Customer"));
-                options.AddPolicy("Employee", policy => policy.RequireRole("Employee"));
-                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("Staff", policy => policy.RequireRole("STAFF"));
+                options.AddPolicy("Admin", policy => policy.RequireRole("ADMIN"));
+                options.AddPolicy("Stylist", policy => policy.RequireRole("STYLIST"));
             });
 
 
@@ -91,7 +92,7 @@ namespace HairSalon.Api.Extensions
                     builder.WithOrigins("")   // TODO: Add client web URL here
                         .AllowAnyMethod()
                         .AllowAnyHeader();
-                });
+                }); 
             });
             var connectionString = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
 

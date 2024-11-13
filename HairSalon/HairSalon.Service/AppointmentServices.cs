@@ -264,7 +264,7 @@ namespace HairSalon.Service
             {
                 list = await _unitOfWork.AppointmentRepository
                 .GetAll()
-                .Where(s => s.CustomerId == stylistId)
+                .Where(s => s.StylistId == stylistId)
                 .Include(a => a.Customer)
                 .Include(a => a.Stylist)
                 .Include(a => a.AppointmentServices)
@@ -275,7 +275,7 @@ namespace HairSalon.Service
             {
                 list = await _unitOfWork.AppointmentRepository
                 .GetAll()
-                .Where(a => a.CustomerId == stylistId && a.AppointmentStatus == (AppointmentStatus) status)
+                .Where(a => a.StylistId == stylistId && a.AppointmentStatus == (AppointmentStatus) status)
                 .Include(a => a.Customer)
                 .Include(a => a.Stylist)
                 .Include(a => a.AppointmentServices)
