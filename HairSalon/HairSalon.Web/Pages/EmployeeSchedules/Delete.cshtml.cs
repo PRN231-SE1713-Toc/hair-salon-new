@@ -7,57 +7,57 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
+using HairSalon.Core.Commons;
+using HairSalon.Core.Dtos.Responses;
 
 namespace HairSalon.Web.Pages.EmployeeSchedules
 {
     public class DeleteModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public DeleteModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public DeleteModel(HttpClient httpClient)
         {
-            _context = context;
+            _httpClient = httpClient;
         }
 
-        [BindProperty]
-        public EmployeeSchedule EmployeeSchedule { get; set; } = default!;
+        public EmployeeScheduleResponse EmployeeSchedule { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public string Message { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var response = await _httpClient.GetAsync($"https://localhost:7200/api/v1/prn231-hairsalon/schedule/{id}");
 
-            var employeeSchedule = await _context.EmployeeSchedules.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (employeeSchedule == null)
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
+                var apiResponse = await response.Content.ReadFromJsonAsync<ApiResponseModel<EmployeeScheduleResponse>>();
+                EmployeeSchedule = apiResponse?.Response;
             }
             else
             {
-                EmployeeSchedule = employeeSchedule;
+                Message = "Schedule not found.";
+                return RedirectToPage("/EmployeeSchedules/Index");
             }
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int id)
         {
-            if (id == null)
+            var response = await _httpClient.DeleteAsync($"https://localhost:7200/api/v1/prn231-hairsalon/schedule/{id}");
+
+            if (response.IsSuccessStatusCode)
             {
-                return NotFound();
+                Message = "Schedule deleted successfully.";
+            }
+            else
+            {
+                Message = "Failed to delete schedule.";
             }
 
-            var employeeSchedule = await _context.EmployeeSchedules.FindAsync(id);
-            if (employeeSchedule != null)
-            {
-                EmployeeSchedule = employeeSchedule;
-                _context.EmployeeSchedules.Remove(EmployeeSchedule);
-                await _context.SaveChangesAsync();
-            }
-
-            return RedirectToPage("./Index");
+            return RedirectToPage("/EmployeeSchedules/Index");
         }
     }
+
 }
