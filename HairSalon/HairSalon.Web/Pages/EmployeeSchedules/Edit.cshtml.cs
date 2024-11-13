@@ -8,82 +8,84 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
+using HairSalon.Core.Commons;
+using HairSalon.Core.Dtos.Requests;
+using System.Text.Json;
 
 namespace HairSalon.Web.Pages.EmployeeSchedules
 {
     public class EditModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public EditModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public EditModel(HttpClient httpClient)
         {
-            _context = context;
+            _httpClient = httpClient;
         }
 
         [BindProperty]
-        public EmployeeSchedule EmployeeSchedule { get; set; } = default!;
+        public UpdateEmployeeSchedule Schedule { get; set; } = new();
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public string? Message { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var response = await _httpClient.GetFromJsonAsync<ApiResponseModel<UpdateEmployeeSchedule>>($"https://localhost:7200/api/v1/prn231-hairsalon/schedules/{id}");
 
-            var employeeschedule = await _context.EmployeeSchedules.FirstOrDefaultAsync(m => m.Id == id);
-            if (employeeschedule == null)
+            if (response?.Response != null)
             {
-                return NotFound();
+                Schedule = response.Response;
             }
-
-            var employeeIdClaim = User.FindFirst("EmployeeId")?.Value;
-            if (employeeIdClaim == null || employeeschedule.EmployeeId != int.Parse(employeeIdClaim))
+            else
             {
-                return NotFound();
+                Message = "Schedule not found!";
+                return RedirectToPage("Index");
             }
-
-            EmployeeSchedule = employeeschedule;
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int id)
         {
-            var employeeIdClaim = User.FindFirst("EmployeeId")?.Value;
-            if (employeeIdClaim == null || EmployeeSchedule.EmployeeId != int.Parse(employeeIdClaim))
-            {
-                return NotFound();
-            }
-
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Attach(EmployeeSchedule).State = EntityState.Modified;
+            var response = await _httpClient.PutAsJsonAsync($"https://localhost:7200/api/v1/prn231-hairsalon/schedule/{id}", Schedule);
 
-            try
+            var rawContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("Response Status Code: " + response.StatusCode);
+            Console.WriteLine("Response Content: " + rawContent);
+
+            if (!response.IsSuccessStatusCode)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeScheduleExists(EmployeeSchedule.Id))
+                if (string.IsNullOrEmpty(rawContent))
                 {
-                    return NotFound();
+                    Message = "The API response is empty. Please check the API or parameters.";
+                    Console.WriteLine("Empty response received.");
+                    return Page();
                 }
-                else
+
+                try
                 {
-                    throw;
+                    var errorResponse = await response.Content.ReadFromJsonAsync<ApiResponseModel<UpdateEmployeeSchedule>>();
+                    Message = errorResponse?.Message ?? "Failed to update schedule";
+                    Console.WriteLine("Error Response: " + errorResponse?.Message);
                 }
+                catch (JsonException ex)
+                {
+                    Message = "Error parsing the response: " + ex.Message;
+                    Console.WriteLine("JSON Parsing Error: " + ex.Message);
+                }
+
+                return Page();
             }
 
-            return RedirectToPage("./Index");
+            Message = "Schedule updated successfully!";
+
+            return RedirectToPage("/EmployeeSchedules/Index");
         }
 
-        private bool EmployeeScheduleExists(int id)
-        {
-            return _context.EmployeeSchedules.Any(e => e.Id == id);
-        }
     }
 }

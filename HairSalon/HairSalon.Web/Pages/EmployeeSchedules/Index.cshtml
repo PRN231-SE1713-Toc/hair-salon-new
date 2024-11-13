@@ -5,53 +5,50 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Employee Schedule</h1>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.EmployeeSchedule[0].WorkingDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmployeeSchedule[0].WorkingStartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmployeeSchedule[0].WorkingEndTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmployeeSchedule[0].Employee)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EmployeeSchedule[0].Employee.Name)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.EmployeeSchedule) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.WorkingDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WorkingStartTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WorkingEndTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Employee.Name)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+<p>@Model.Message</p>
+
+@if (Model.Schedules.Any())
+{
+    <table class="table">
+        <thead>
+            <a asp-page="/EmployeeSchedules/Create">Create Schedule</a>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Working Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Actions</th> <!-- Add Actions column -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var schedule in Model.Schedules)
+            {
+                <tr>
+                    <td>@schedule.Id</td>
+                    <td>@schedule.Name</td>
+                    <td>@schedule.WorkingDate</td>
+                    <td>@schedule.WorkingStartTime</td>
+                    <td>@schedule.WorkingEndTime</td>
+                    <td>
+                        <a asp-page="/EmployeeSchedules/Details" asp-route-id="@schedule.Id">View Details</a>
+                    </td>
+                    <td>
+                        <a asp-page="/EmployeeSchedules/Edit" asp-route-id="@schedule.Id">Update</a>
+                    </td>
+                    <td>
+                        <form method="post" asp-page="/EmployeeSchedules/Delete" asp-route-id="@schedule.Id" onsubmit="return confirm('Are you sure you want to delete this schedule?');">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
-    </tbody>
-</table>
+else
+{
+    <p>No schedules available.</p>
+}

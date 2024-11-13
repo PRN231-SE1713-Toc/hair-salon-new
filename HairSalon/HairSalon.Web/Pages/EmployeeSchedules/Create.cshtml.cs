@@ -7,27 +7,25 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using HairSalon.Core.Entities;
 using HairSalon.Infrastructure;
+using HairSalon.Core.Commons;
+using HairSalon.Core.Dtos.Requests;
 
 namespace HairSalon.Web.Pages.EmployeeSchedules
 {
     public class CreateModel : PageModel
     {
-        private readonly HairSalon.Infrastructure.HairSalonDbContext _context;
+        private readonly HttpClient _httpClient;
 
-        public CreateModel(HairSalon.Infrastructure.HairSalonDbContext context)
+        public CreateModel(HttpClient httpClient)
         {
-            _context = context;
+            _httpClient = httpClient;
         }
 
         [BindProperty]
-        public EmployeeSchedule EmployeeSchedule { get; set; } = default!;
+        public CreateEmployeeScheduleModel Schedule { get; set; }
 
-        public IActionResult OnGet()
-        {
-            return Page();
-        }
+        public string Message { get; set; } = string.Empty;
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -35,19 +33,23 @@ namespace HairSalon.Web.Pages.EmployeeSchedules
                 return Page();
             }
 
-            var employeeId = User.FindFirst("EmployeeId")?.Value;
+            // Automatically set EmployeeId from the logged-in user's claims
+            int employeeId = int.Parse(User.FindFirst("EmployeeId").Value);
+            Schedule.EmployeeId = employeeId;
 
-            if (employeeId == null)
+            var response = await _httpClient.PostAsJsonAsync("https://localhost:7200/api/v1/prn231-hairsalon/schedules", Schedule);
+
+            if (response.IsSuccessStatusCode)
             {
-                return RedirectToPage("/Login");
+                Message = "Schedule created successfully!";
+                return RedirectToPage("Index");
             }
-
-            EmployeeSchedule.EmployeeId = int.Parse(employeeId);
-
-            _context.EmployeeSchedules.Add(EmployeeSchedule);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            else
+            {
+                var errorResponse = await response.Content.ReadFromJsonAsync<ApiResponseModel<string>>();
+                Message = errorResponse?.Message ?? "Failed to create schedule";
+                return Page();
+            }
         }
     }
 }

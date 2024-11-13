@@ -26,8 +26,14 @@ namespace HairSalon.Service
 
             CreateMap<EmployeeSchedule, EmployeeScheduleResponse>()
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Employee.Name));
+            CreateMap<EmployeeScheduleResponse, EmployeeSchedule>();
+
             CreateMap<UpdateEmployeeSchedule, EmployeeSchedule>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore());
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.WorkingStartTime, opt => opt.MapFrom(src =>
+                    TryParseTime(src.WorkingStartTime)))
+                .ForMember(dest => dest.WorkingEndTime, opt => opt.MapFrom(src =>
+                    TryParseTime(src.WorkingEndTime)));
 
             CreateMap<CreateEmployeeScheduleModel, EmployeeSchedule>()
                 .ForMember(dest => dest.WorkingStartTime, opt => opt.MapFrom(src => TimeOnly.Parse(src.WorkingStartTime)))
@@ -35,5 +41,19 @@ namespace HairSalon.Service
 
             CreateMap<AppointmentService, AppointmentServiceDto>().ReverseMap();
         }
+
+        private TimeOnly TryParseTime(string timeString)
+        {
+            if (TimeOnly.TryParse(timeString, out var parsedTime))
+            {
+                return parsedTime;
+            }
+            else
+            {
+                return TimeOnly.MinValue;
+            }
+        }
+
     }
+
 }

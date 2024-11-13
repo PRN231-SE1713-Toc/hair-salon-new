@@ -1,46 +1,38 @@
-﻿@page
+﻿@page "{id:int}"
 @model HairSalon.Web.Pages.EmployeeSchedules.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Schedule";
 }
 
-<h1>Edit</h1>
+<h1>Edit Schedule</h1>
 
-<h4>EmployeeSchedule</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="EmployeeSchedule.Id" />
-            <input type="hidden" asp-for="EmployeeSchedule.EmployeeId" />
-            <div class="form-group">
-                <label asp-for="EmployeeSchedule.WorkingDate" class="control-label"></label>
-                <input asp-for="EmployeeSchedule.WorkingDate" class="form-control" />
-                <span asp-validation-for="EmployeeSchedule.WorkingDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmployeeSchedule.WorkingStartTime" class="control-label"></label>
-                <input asp-for="EmployeeSchedule.WorkingStartTime" class="form-control" />
-                <span asp-validation-for="EmployeeSchedule.WorkingStartTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EmployeeSchedule.WorkingEndTime" class="control-label"></label>
-                <input asp-for="EmployeeSchedule.WorkingEndTime" class="form-control" />
-                <span asp-validation-for="EmployeeSchedule.WorkingEndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <p>@Model.Message</p>
+}
+
+<form method="post">
+    <!-- Hidden input for EmployeeId -->
+    <input type="hidden" asp-for="Schedule.EmployeeId" />
+
+    <div class="form-group">
+        <label asp-for="Schedule.WorkingDate" class="control-label"></label>
+        <input asp-for="Schedule.WorkingDate" type="date" class="form-control" />
+        <span asp-validation-for="Schedule.WorkingDate" class="text-danger"></span>
     </div>
-</div>
 
-<div>
-    <a asp-page="./Index">Back to List</a>
-</div>
+    <div class="form-group">
+        <label asp-for="Schedule.WorkingStartTime" class="control-label"></label>
+        <input asp-for="Schedule.WorkingStartTime" type="time" class="form-control" />
+        <span asp-validation-for="Schedule.WorkingStartTime" class="text-danger"></span>
+    </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    <div class="form-group">
+        <label asp-for="Schedule.WorkingEndTime" class="control-label"></label>
+        <input asp-for="Schedule.WorkingEndTime" type="time" class="form-control" />
+        <span asp-validation-for="Schedule.WorkingEndTime" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
