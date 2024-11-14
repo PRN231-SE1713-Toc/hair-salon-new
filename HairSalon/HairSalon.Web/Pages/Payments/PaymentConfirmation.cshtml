@@ -4,25 +4,43 @@
     ViewData["Title"] = "Xác nhận Thanh toán";
 }
 
-<h2>Xác nhận Thanh toán</h2>
+<h2>Payment confirm</h2>
 
 <div>
-    <h4>Thông tin Đặt lịch</h4>
+    <h4>Appointment Information</h4>
     <div>
-        <label><b>Mã Đặt lịch:</b></label>
-        <span>@Model.AppointmentId</span>
+        <label><b>Customer:</b></label>
+        <span>@Model.appointment.CustomerName</span>
     </div>
     <div>
-        <label><b>Mã Khách hàng:</b></label>
-        <span>@Model.CustomerId</span>
+        <label><b>Service</b></label>
+        <ul>
+            @foreach (var service in Model.appointment.AppointmentServices)
+            {
+                <li class="ml-4">- @service.ServiceName</li>
+            }
+        </ul>
+    </div>
+    <div>
+        <label><b>Date:</b></label>
+        <span>@Model.appointment.AppointmentDate</span>
+    </div>
+    <div>
+        <label><b>Time:</b></label>
+        <span>@Model.appointment.StartTime - @Model.appointment.EndTime</span>
+    </div>
+    <div>
+        <label><b>Stylist:</b></label>
+        <span>@Model.appointment.StylistName</span>
     </div>
 </div>
 
 <div class="alert alert-info">
-    Vui lòng kiểm tra lại thông tin trước khi tiến hành thanh toán.
+    Please check your appointment again before payment.
 </div>
 
 <form method="post">
-    <button type="submit" class="btn btn-primary">Thanh toán</button>
-    <a asp-page="./Index" class="btn btn-secondary">Hủy bỏ</a>
+    <button type="submit" class="btn btn-primary">pay</button>
+    <button type="submit" class="btn btn-primary text-danger">Cancel this appointment</button>
+    <a asp-page="./Index" class="btn btn-secondary">back to List</a>
 </form>

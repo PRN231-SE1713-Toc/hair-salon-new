@@ -1,5 +1,9 @@
+using HairSalon.Core.Dtos.Responses;
+using HairSalon.Core.Entities;
+using HairSalon.Web.Pages.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net.Http;
 
 namespace HairSalon.Web.Pages.Payments
 {
@@ -11,11 +15,12 @@ namespace HairSalon.Web.Pages.Payments
         {
             _httpContextAccessor = httpContextAccessor;
         }
-
-        public void OnGet()
+        [BindProperty]
+        public int AppointmentId { get; set; }
+        public IActionResult OnGet()
         {
-            _httpContextAccessor.HttpContext.Session.Remove("CustomerId");
-            _httpContextAccessor.HttpContext.Session.Remove("AppointmentId");
+            AppointmentId = _httpContextAccessor.HttpContext.Session.GetInt32("AppointmentId") ?? 0;
+            return Page();
         }
     }
 }

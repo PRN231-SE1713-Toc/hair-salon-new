@@ -34,16 +34,18 @@ namespace HairSalon.Web.Pages.Appointments
         }
 
         public IList<AppointmentViewResponse> Appointment { get; set; } = default!;
+        public int EmployeeId { get; set; }
 
         public async Task OnGetAsync()
         {
+            _httpContextAccessor.HttpContext.Session.Remove("AppointmentId");
             int? customerId = _httpContextAccessor.HttpContext?.Session.GetInt32("CustomerId");
-            int? employeeId = _httpContextAccessor.HttpContext?.Session.GetInt32("EmpId");
+            EmployeeId = _httpContextAccessor.HttpContext?.Session.GetInt32("EmpId") ?? 0;
 
 
             if (customerId != null)
             {
-                var result = await _httpClient.GetAsync(ApplicationEndpoint.AppointmentGetByCustomerIdEndPoint + customerId.ToString() + "?status=1");
+                var result = await _httpClient.GetAsync(ApplicationEndpoint.AppointmentGetByCustomerIdEndPoint + customerId.ToString() + "?status=-1");
 
                 if (result.IsSuccessStatusCode)
                 {
@@ -54,9 +56,9 @@ namespace HairSalon.Web.Pages.Appointments
                     Appointment = new List<AppointmentViewResponse>();
                 }
             }
-            else if (employeeId != null)
+            else if (EmployeeId != null)
             {
-                var result = await _httpClient.GetAsync(ApplicationEndpoint.AppointmentGetByStylistIdEndPoint + employeeId.ToString() + "?status=1");
+                var result = await _httpClient.GetAsync(ApplicationEndpoint.AppointmentGetAllEndPoint);
 
                 if (result.IsSuccessStatusCode)
                 {

@@ -1,85 +1,60 @@
 ﻿@page
 @model HairSalon.Web.Pages.Appointments.IndexModel
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor﻿
 @{
     ViewData["Title"] = "Index";
     Layout = "_Layout";
 }
 
-<h1>Index</h1>
+<h1>Appointments</h1>
 
 <p>
     <a asp-page="CreateService">Book new appointment</a>
 </p>
+
 <div>
-    status
-<li class="nav-item dropdown me-3">
-    <a class="nav-link dropdown-toggle" href="#" id="blogDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        All
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="blogDropdown">
-        <li><a class="dropdown-item" asp-page="/Blog">Blog</a></li>
-        <li><a class="dropdown-item" asp-page="/SingleBlog">Single Blog</a></li>
-    </ul>
-</li>
+    <label><b>Filter by Status</b></label>
+    <select id="statusFilter" onchange="filterAppointments()" class="form-control" style="width: 200px;">
+        <option value="All">All</option>
+        <option value="PENDING">PENDING</option>
+        <option value="VERIFIED">VERIFIED</option>
+        <option value="COMPLETED">COMPLETED</option>
+        <option value="CANCELLED">CANCELLED</option>
+    </select>
 </div>
+
+@if (@Model.EmployeeId != 0) {
+<div class="mt-2">
+    <select id="stylistFilter" onchange="filterAppointments()" class="form-control" style="width: 200px;">
+        <option value="All">All Appointment</option>
+        <option value="@Model.EmployeeId">Your Appointment</option>
+    </select>
+</div>
+}
+
 @if (Model.Appointment != null && Model.Appointment.Any())
 {
-    <table class="table">
+    <table class="table mt-3" id="appointmentsTable">
         <thead>
             <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Appointment[0].AppointmentDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Appointment[0].StartTime)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Appointment[0].EndTime)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Appointment[0].StylistName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Appointment[0].Note)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Appointment[0].AppointmentStatus)
-                </th>
-                <th></th>
+                <th>@Html.DisplayNameFor(model => model.Appointment[0].AppointmentDate)</th>
+                <th>@Html.DisplayNameFor(model => model.Appointment[0].StartTime)</th>
+                <th>@Html.DisplayNameFor(model => model.Appointment[0].EndTime)</th>
+                <th>@Html.DisplayNameFor(model => model.Appointment[0].StylistName)</th>
+                <th>@Html.DisplayNameFor(model => model.Appointment[0].Note)</th>
+                <th>@Html.DisplayNameFor(model => model.Appointment[0].AppointmentStatus)</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.Appointment)
             {
-                if (item.AppointmentStatus == "VERIFIED")
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.AppointmentDate)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.StartTime)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.EndTime)
-                        </td>
-                        <td>
-                            <a asp-page="./StylistDetail" asp-route-stylistId="@item.StylistId" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.StylistName)</a>
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Note)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.AppointmentStatus)
-                        </td>
-                        <td>
-                            <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                            <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-                        </td>
-                    </tr>
-                }
+                <tr data-status="@item.AppointmentStatus" data-stylist-id="@item.StylistId">
+                    <td>@Html.DisplayFor(modelItem => item.AppointmentDate)</td>
+                    <td>@Html.DisplayFor(modelItem => item.StartTime)</td>
+                    <td>@Html.DisplayFor(modelItem => item.EndTime)</td>
+                    <td>@Html.DisplayFor(modelItem => item.StylistName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Note)</td>
+                    <td>@Html.DisplayFor(modelItem => item.AppointmentStatus)</td>
+                </tr>
             }
         </tbody>
     </table>
@@ -88,3 +63,26 @@ else
 {
     <p>No appointments available.</p>
 }
+
+<script>
+    function filterAppointments() {
+        const selectedStatus = document.getElementById('statusFilter').value;
+        const stylistFilter = document.getElementById('stylistFilter');
+        const selectedStylist = stylistFilter ? stylistFilter.value : "All";
+        console.log(selectedStylist);
+        const rows = document.querySelectorAll('#appointmentsTable tbody tr');
+
+        rows.forEach(row => {
+            const status = row.getAttribute('data-status');
+            const stylistId = row.getAttribute('data-stylist-id');
+
+            const matchesStatus = (selectedStatus === "All" || status === selectedStatus);
+            const matchesStylist = (selectedStylist === "All" || stylistId === selectedStylist);
+            if (matchesStatus && matchesStylist) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+</script>

@@ -14,8 +14,8 @@ namespace HairSalon.Web.Pages.Payments
 
         public void OnGet()
         {
-            _httpContextAccessor.HttpContext.Session.Remove("CustomerId");
-            _httpContextAccessor.HttpContext.Session.Remove("AppointmentId");
+            //_httpContextAccessor.HttpContext.Session.Remove("CustomerId");
+            string appointmentId = _httpContextAccessor.HttpContext.Session.GetString("AppointmentId");
         }
     }
 }

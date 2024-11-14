@@ -1,4 +1,5 @@
-﻿using HairSalon.Web.Pages.Endpoints;
+﻿using HairSalon.Core.Dtos.Responses;
+using HairSalon.Web.Pages.Endpoints;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Headers;
@@ -23,37 +24,32 @@ namespace HairSalon.Web.Pages.Payments
             }
         }
 
+        public AppointmentViewResponse appointment {  get; set; }
         public int AppointmentId { get; set; }
         public int CustomerId { get; set; }
 
+
         public async Task<IActionResult> OnGetAsync()
         {
-            // Lấy CustomerId và AppointmentId từ Session
-            CustomerId = _httpContextAccessor.HttpContext.Session.GetInt32("CustomerId") ?? 0;
-            AppointmentId = _httpContextAccessor.HttpContext.Session.GetInt32("AppointmentId") ?? 0;
-
+            await populate();
             if (CustomerId == 0 || AppointmentId == 0)
             {
-                ModelState.AddModelError(string.Empty, "Không tìm thấy thông tin đặt lịch.");
+                ModelState.AddModelError(string.Empty, "Appointment Not found.");
                 return Page();
             }
-
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Lấy CustomerId và AppointmentId từ Session
-            CustomerId = _httpContextAccessor.HttpContext.Session.GetInt32("CustomerId") ?? 0;
-            AppointmentId = _httpContextAccessor.HttpContext.Session.GetInt32("AppointmentId") ?? 0;
+            await populate();
 
             if (CustomerId == 0 || AppointmentId == 0)
             {
-                ModelState.AddModelError(string.Empty, "Không tìm thấy thông tin đặt lịch.");
+                ModelState.AddModelError(string.Empty, "Appointment detail not found.");
                 return Page();
             }
 
-            // Gọi API thanh toán với thông tin cần thiết
             var url = $"{ApplicationEndpoint.PaymentVNPayEndpoint}?appointmentId={AppointmentId}&userId={CustomerId}";
             var response = await _httpClient.PostAsync(url, null);
             if (response.IsSuccessStatusCode)
@@ -64,9 +60,20 @@ namespace HairSalon.Web.Pages.Payments
                     return Redirect(data.url.result);
                 }
             }
-
-            ModelState.AddModelError(string.Empty, "Thanh toán không thành công.");
+            ModelState.AddModelError(string.Empty, "Payment unsuccessfully.");
             return Page();
+        }
+
+        public async Task populate()
+        {
+            CustomerId = _httpContextAccessor.HttpContext.Session.GetInt32("CustomerId") ?? 0;
+            AppointmentId = _httpContextAccessor.HttpContext.Session.GetInt32("AppointmentId") ?? 0;
+
+            if (CustomerId > 0 || AppointmentId > 0)
+            {
+                var result = await _httpClient.GetAsync(ApplicationEndpoint.AppointmentGetByIdEndPoint + AppointmentId);
+                appointment = result.Content.ReadFromJsonAsync<AppointmentViewResponse>().Result;
+            }
         }
 
         public class PaymentResponseModel
