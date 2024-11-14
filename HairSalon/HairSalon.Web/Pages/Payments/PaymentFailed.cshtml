@@ -5,12 +5,13 @@
     Layout = "_Layout";
 }
 
-<h2>Thanh toán thất bại</h2>
+<h2>Payment failed</h2>
 
 <div class="alert alert-danger">
-    Rất tiếc, giao dịch của bạn không thành công. 
+    Payment for your appointment is failed. 
 </div>
 
 <div>
-    <a asp-page="/Index" class="btn btn-secondary">Trở về trang chủ</a>
+    <a asp-page="/Payments/PaymentConfirmation"></a>
+    <a asp-page="/Index" class="btn btn-secondary">back to list</a>
 </div>

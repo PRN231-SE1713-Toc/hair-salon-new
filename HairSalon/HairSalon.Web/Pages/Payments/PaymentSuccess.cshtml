@@ -5,12 +5,13 @@
     Layout = "_Layout";
 }
 
-<h2>Thanh toán thành công</h2>
+<h2>Payment Success</h2>
 
 <div class="alert alert-success">
-    Cảm ơn bạn đã thanh toán! Giao dịch của bạn đã được xác nhận thành công.
+    Payment successfully! Your appointment is ready.
 </div>
 
 <div>
-    <a asp-page="/Index" class="btn btn-primary">Trở về trang chủ</a>
+    <a asp-page="./Details" asp-route-id="@Model.AppointmentId">Details</a>
+    <a asp-page="/Index" class="btn btn-primary">Back to List</a>
 </div>
