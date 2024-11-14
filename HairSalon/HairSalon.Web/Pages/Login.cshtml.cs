@@ -57,7 +57,12 @@ namespace HairSalon.Web.Pages
                     _httpContextAccessor.HttpContext?.Session.SetString("EmpName", employee.Name);
                     _httpContextAccessor.HttpContext?.Session.SetString("EmpRole", employee.Role);
                     _httpContextAccessor.HttpContext?.Session.SetString("EmpToken", employee.AccessToken);
-                    
+
+                    if (employee.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return RedirectToPage("/Admins/DashBoard/Service");
+                    }
+
                     return RedirectToPage("/Appointments/Index");
                 }
             }

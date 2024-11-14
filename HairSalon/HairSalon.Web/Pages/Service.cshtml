@@ -41,7 +41,8 @@
                                 <h4 class="text-primary mb-3">@service.Name</h4>
                                 <p class="flex-grow-1">@service.Description</p>
                                 <p><strong>Duration:</strong> @service.EstimatedDuration</p>
-                                <p><strong>Price:</strong> $@service.Price</p>
+                                <p><strong>Price:</strong> @string.Format("{0:N0} VNĐ", service.Price)</p>
+
                             </div>
                         </div>
                     </div>

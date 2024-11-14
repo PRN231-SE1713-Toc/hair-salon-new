@@ -34,6 +34,10 @@
 
         // Hair service endpoints
         public const string GetHairServiceEndpoint = Domain + "hair-services";
+        public const string GetHairServiceByIdEndpoint = Domain + "hair-services/";
+        public const string CreateHairServiceEndpoint = Domain + "hair-service";
+        public const string UpdateHairServiceEndpoint = Domain + "hair-service/";
+        public const string DeleteHairServiceEndpoint = Domain + "hair-service/";
 
         // Payment endpounts
         public const string PaymentVNPayEndpoint = Domain + "payment/vnpay";
