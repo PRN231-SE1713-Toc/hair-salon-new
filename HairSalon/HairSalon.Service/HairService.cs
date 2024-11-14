@@ -43,6 +43,8 @@ namespace HairSalon.Service
                 }
 
                 var service = _mapper.Map<Core.Entities.Service>(serviceRequest);
+
+                service.Duration = serviceRequest.EstimatedDuration + " minutes";
                 
                 _unitOfWork.ServiceRepository.Add(service);
                 await _unitOfWork.CommitAsync();
@@ -113,6 +115,9 @@ namespace HairSalon.Service
                 }
 
                 _ = _mapper.Map(request, service);
+
+                service.Duration = request.EstimatedDuration + " minutes";
+
                 _unitOfWork.ServiceRepository.Update(service);
                 await _unitOfWork.CommitAsync();
                 return true;
