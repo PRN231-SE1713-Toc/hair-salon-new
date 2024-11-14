@@ -147,19 +147,7 @@ namespace HairSalon.Service
 
             //Not found
             if (result == null) return null;
-
-            var appointmentServices = await Task.WhenAll(result.AppointmentServices.Select(async res =>
-            {
-                var service = await _unitOfWork.ServiceRepository.FindByIdAsync(res.ServiceId);
-                return new AppointmentServiceDto
-                {
-                    Id = res.Id,
-                    AppointmentId = res.AppointmentId,
-                    ServiceId = res.ServiceId,
-                    ServiceName = service?.Name ?? null,
-                    CurrentPrice = res.CurrentPrice
-                };
-            }));
+            var services = await _unitOfWork.ServiceRepository.GetAll().ToListAsync();
             AppointmentViewResponse appointmentViewResponse = new AppointmentViewResponse
             {
                 Id = id,
@@ -172,7 +160,14 @@ namespace HairSalon.Service
                 EndTime = result.EndTime,
                 Note = result.Note,
                 AppointmentStatus = result.AppointmentStatus.ToString(),
-                AppointmentServices = appointmentServices,
+                AppointmentServices = result.AppointmentServices.Select(res => new AppointmentServiceDto
+                {
+                    Id = res.Id,
+                    AppointmentId = res.AppointmentId,
+                    ServiceId = res.ServiceId,
+                    ServiceName = services.FirstOrDefault(s => s.Id == res.ServiceId)?.Name ?? null,
+                    CurrentPrice = res.CurrentPrice,
+                }),
                 AppointmentCost = result.AppointmentServices.Sum(a => a.CurrentPrice)
             };
             return appointmentViewResponse;
