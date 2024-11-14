@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace HairSalon.Core.Dtos.Requests
 {
     public class AppointmentCreateModel
     {
-        //public int Id { get; set; }
+        public int Id { get; set; }
         [Required]
         [Range(0, int.MaxValue, ErrorMessage ="Customer Id must greater than 0")]
         public int CustomerId { get; set; }
@@ -34,6 +35,7 @@ namespace HairSalon.Core.Dtos.Requests
         public string? Note { get; set; }
 
         [Required]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public AppointmentStatus AppointmentStatus { get; set; }
 
         [Required]

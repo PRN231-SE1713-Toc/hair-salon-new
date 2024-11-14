@@ -61,11 +61,13 @@ namespace HairSalon.Web.Pages.Appointments
             var result = await _httpClient.PostAsync(ApplicationEndpoint.AppointmentCreateEndPoint, JsonContent.Create(Appointment));
             if (result.StatusCode == System.Net.HttpStatusCode.Created) 
             {
-                return RedirectToPage("./Index");
-            }
-            if (result.StatusCode == System.Net.HttpStatusCode.Created)
-            {
-                return RedirectToPage("./Index");
+                var createdAppointment = await result.Content.ReadFromJsonAsync<AppointmentCreateModel>();
+
+                // Lưu CustomerId và AppointmentId vào session
+                _httpContextAccessor.HttpContext.Session.SetInt32("CustomerId", createdAppointment.CustomerId);
+                _httpContextAccessor.HttpContext.Session.SetInt32("AppointmentId", createdAppointment.Id);
+
+                return RedirectToPage("/Payments/PaymentConfirmation");
             }
             else if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {

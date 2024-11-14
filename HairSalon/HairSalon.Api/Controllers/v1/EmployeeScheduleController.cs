@@ -19,7 +19,7 @@ namespace HairSalon.Api.Controllers.v1
 
         //GET: api/Schedule
         [HttpGet("schedules")]
-        [Authorize]
+        //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<EmployeeScheduleResponse>>> GetSchedule()

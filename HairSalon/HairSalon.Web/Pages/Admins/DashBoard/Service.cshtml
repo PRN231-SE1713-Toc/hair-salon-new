@@ -1,0 +1,53 @@
+﻿@page "/Admins/DashBoard/Service"
+@model HairSalon.Web.Pages.Admins.DashBoard.ServiceModel
+@{
+}
+
+<div class="container mt-4">
+    <h4 class="mb-3">Services List</h4>
+    <div class="mb-3">
+        <a href="/Admins/DashBoard/Create" class="btn btn-primary">Add Service</a>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Duration</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Services != null && Model.Services.Count > 0)
+            {
+                foreach (var service in Model.Services)
+                {
+                    <tr>
+                        <td>@service.Id</td>
+                        <td>@service.Name</td>
+                        <td>@service.Description</td>
+                        <td>@service.EstimatedDuration</td>
+                        <td>@string.Format("{0:N0} VNĐ", service.Price)</td>
+                        <td>
+                            <a href="/Admins/DashBoard/Edit?id=@service.Id" class="btn btn-warning btn-sm">Edit</a>
+                             <form method="post" asp-page-handler="Delete" asp-route-id="@service.Id" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this service?');">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center">No services available.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+

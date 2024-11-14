@@ -26,7 +26,7 @@ namespace HairSalon.Web.Pages.EmployeeSchedules
 
         public async Task OnGetAsync()
         {
-            var response = await _httpClient.GetAsync("https://localhost:7200/api/v1/prn231-hairsalon/schedules");
+            var response = await _httpClient.GetAsync("http://localhost:5255/api/v1/prn231-hairsalon/schedules");
 
             if (response.IsSuccessStatusCode)
             {

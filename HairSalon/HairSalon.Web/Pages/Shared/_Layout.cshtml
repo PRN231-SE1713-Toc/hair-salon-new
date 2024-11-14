@@ -29,12 +29,29 @@
                             <img src="~/img/logo.png" alt="Logo">
                         </a>
                     </div>
-
-                    <!-- Navigation Links -->
                     <ul class="navbar-nav d-flex align-items-center ">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-page="/Service">Service</a>
-                        </li>   
+                        @if (HttpContextAccessor.HttpContext?.Session.GetInt32("EmpId") != null)
+                        {
+                            if (HttpContextAccessor.HttpContext?.Session.GetString("EmpRole") == "ADMIN")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-page="/Admins/DashBoard/Service">Service Management</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-page="/Service">Service</a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-page="/Service">Service</a>
+                            </li>
+                        }
+
                         <li class="nav-item">
                             <a class="nav-schedule" style="color: #ffffff" asp-page="/EmployeeSchedules/Index">Schedules</a>
                         </li>

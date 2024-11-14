@@ -71,7 +71,7 @@ namespace HairSalon.Api.Controllers.v1
         /// <param name="request">Updated request model</param>
         /// <returns></returns>
         [HttpPut("hair-service/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -95,7 +95,7 @@ namespace HairSalon.Api.Controllers.v1
         }
 
         [HttpPost("hair-service")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ApiResponseModel<string>>> Create(HairServiceRequest request)
@@ -121,7 +121,7 @@ namespace HairSalon.Api.Controllers.v1
         /// <param name="id">Service's id</param>
         /// <returns></returns>
         [HttpDelete("hair-service/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "ADMIN")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteService(int id)

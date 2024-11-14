@@ -1,5 +1,7 @@
 ﻿using HairSalon.Core.Contracts.Services;
+using HairSalon.Core.Dtos.Requests;
 using HairSalon.Core.Dtos.Responses;
+using HairSalon.Core.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -56,11 +58,45 @@ namespace HairSalon.Api.Controllers.v1
         public async Task<IActionResult> PaymenCalltBack()
         {
             var queryParameters = HttpContext.Request.Query;
-            // Kiểm tra và lấy giá trị 'vnp_OrderInfo' từ Query
             string orderInfo = queryParameters["vnp_OrderInfo"];
+            string responseCode = queryParameters["vnp_ResponseCode"];
+
+            if (string.IsNullOrEmpty(orderInfo))
+            {
+                return BadRequest("Thông tin đơn hàng không tồn tại.");
+            }
+
+
             string userId = _transactionService.GetUserId(orderInfo);
             string orderId = _transactionService.GetAppointmentId(orderInfo);
-            decimal amount = decimal.Parse(queryParameters["vnp_Amount"]);
+
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(orderId))
+            {
+                return BadRequest("Thông tin đơn hàng không đầy đủ.");
+            }
+
+            int appointmentId;
+            if (!int.TryParse(orderId, out appointmentId))
+            {
+                return BadRequest("Mã đơn hàng không hợp lệ.");
+            }
+
+            if (responseCode != "00")
+            {
+                var updateResult = await _appointmentServices.UpdateAppointmentStatus(appointmentId, Core.Enums.AppointmentStatus.CANCELLED);
+                if (updateResult == "Appointment status updated successfully")
+                {
+                    return Redirect("http://localhost:5178/Payments/PaymentFailed");
+                }
+                return BadRequest("Error");
+            }
+
+
+            if (!decimal.TryParse(queryParameters["vnp_Amount"], out decimal amount))
+            {
+                return BadRequest("Thông tin số tiền không hợp lệ.");
+            }
+
             if (string.IsNullOrEmpty(orderInfo))
             {
                 return BadRequest("Thông tin đơn hàng không tồn tại.");
@@ -76,10 +112,6 @@ namespace HairSalon.Api.Controllers.v1
                     orderInfoDict[keyValue[0].Trim()] = keyValue[1].Trim();
                 }
             }
-
-            Console.WriteLine("UserID: " + userId + " and AppoinmentId: " + orderId);
-
-            //Tạo và lưu trữ thông tin giao dịch
             var paymentDto = new TransactionResponseDTO()
             {
                 CustomerId = int.Parse(userId),
@@ -87,17 +119,30 @@ namespace HairSalon.Api.Controllers.v1
                 Status = "SUCCESS",
                 Amount = amount,
                 Method = "VnPay",
-                
-                //TODO: Lmao UtcNow là giờ hiện tại display trên máy mà, add thêm 7 lmao lệch giờ transaction
                 TransactionDate = DateTime.UtcNow.AddHours(7),
             };
+
+            var appointmentExistSuccess = await _appointmentServices.GetAppointment(paymentDto.AppointmentId);
+            if (appointmentExistSuccess == null)
+            {
+                return BadRequest("Không tìm thấy thông tin cuộc hẹn.");
+            }
+
             var result = await _transactionService.AddPayment(paymentDto);
 
             if (result == "Add succesfully")
             {
-                return Redirect("http://localhost:5000/" /*+ userId*/); // thay đổi đường link
+                var updateResult = await _appointmentServices.UpdateAppointmentStatus(appointmentId, Core.Enums.AppointmentStatus.VERIFIED);
+                if (updateResult == "Appointment status updated successfully")
+                {
+                    return Redirect("http://localhost:5178/Payments/PaymentSuccess");
+                }
+                return BadRequest("Không thể cập nhật trạng thái cuộc hẹn.");
             }
-            return BadRequest("Invalid transaction data.");
+            else
+            {
+                return BadRequest("Invalid transaction data.");
+            }
         }
     }
 }

@@ -15,10 +15,12 @@ namespace HairSalon.Web.Pages.EmployeeSchedules
     public class CreateModel : PageModel
     {
         private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CreateModel(HttpClient httpClient)
+        public CreateModel(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
@@ -33,11 +35,17 @@ namespace HairSalon.Web.Pages.EmployeeSchedules
                 return Page();
             }
 
-            // Automatically set EmployeeId from the logged-in user's claims
-            int employeeId = int.Parse(User.FindFirst("EmployeeId").Value);
-            Schedule.EmployeeId = employeeId;
+            int? employeeId = _httpContextAccessor.HttpContext?.Session.GetInt32("EmpId");
 
-            var response = await _httpClient.PostAsJsonAsync("https://localhost:7200/api/v1/prn231-hairsalon/schedules", Schedule);
+            if (employeeId == null)
+            {
+                ModelState.AddModelError(string.Empty, "Employee ID not found in session.");
+                return Page();
+            }
+
+            Schedule.EmployeeId = employeeId.Value;
+
+            var response = await _httpClient.PostAsJsonAsync("http://localhost:5255/api/v1/prn231-hairsalon/schedules", Schedule);
 
             if (response.IsSuccessStatusCode)
             {
@@ -51,5 +59,6 @@ namespace HairSalon.Web.Pages.EmployeeSchedules
                 return Page();
             }
         }
+
     }
 }
