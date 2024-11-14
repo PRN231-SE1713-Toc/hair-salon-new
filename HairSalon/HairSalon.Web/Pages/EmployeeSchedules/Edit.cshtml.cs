@@ -30,7 +30,7 @@ namespace HairSalon.Web.Pages.EmployeeSchedules
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var response = await _httpClient.GetFromJsonAsync<ApiResponseModel<UpdateEmployeeSchedule>>($"https://localhost:7200/api/v1/prn231-hairsalon/schedules/{id}");
+            var response = await _httpClient.GetFromJsonAsync<ApiResponseModel<UpdateEmployeeSchedule>>($"http://localhost:5255/api/v1/prn231-hairsalon/schedules/{id}");
 
             if (response?.Response != null)
             {
@@ -52,7 +52,7 @@ namespace HairSalon.Web.Pages.EmployeeSchedules
                 return Page();
             }
 
-            var response = await _httpClient.PutAsJsonAsync($"https://localhost:7200/api/v1/prn231-hairsalon/schedule/{id}", Schedule);
+            var response = await _httpClient.PutAsJsonAsync($"http://localhost:5255/api/v1/prn231-hairsalon/schedule/{id}", Schedule);
 
             var rawContent = await response.Content.ReadAsStringAsync();
             Console.WriteLine("Response Status Code: " + response.StatusCode);

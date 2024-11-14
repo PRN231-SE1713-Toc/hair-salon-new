@@ -27,7 +27,7 @@ namespace HairSalon.Web.Pages.EmployeeSchedules
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var response = await _httpClient.GetAsync($"https://localhost:7200/api/v1/prn231-hairsalon/schedule/{id}");
+            var response = await _httpClient.GetAsync($"http://localhost:5255/api/v1/prn231-hairsalon/schedule/{id}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -45,7 +45,7 @@ namespace HairSalon.Web.Pages.EmployeeSchedules
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            var response = await _httpClient.DeleteAsync($"https://localhost:7200/api/v1/prn231-hairsalon/schedule/{id}");
+            var response = await _httpClient.DeleteAsync($"http://localhost:5255/api/v1/prn231-hairsalon/schedule/{id}");
 
             if (response.IsSuccessStatusCode)
             {

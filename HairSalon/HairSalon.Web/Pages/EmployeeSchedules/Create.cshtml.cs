@@ -45,7 +45,7 @@ namespace HairSalon.Web.Pages.EmployeeSchedules
 
             Schedule.EmployeeId = employeeId.Value;
 
-            var response = await _httpClient.PostAsJsonAsync("https://localhost:7200/api/v1/prn231-hairsalon/schedules", Schedule);
+            var response = await _httpClient.PostAsJsonAsync("http://localhost:5255/api/v1/prn231-hairsalon/schedules", Schedule);
 
             if (response.IsSuccessStatusCode)
             {

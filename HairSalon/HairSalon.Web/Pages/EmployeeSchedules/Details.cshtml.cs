@@ -27,7 +27,7 @@ namespace HairSalon.Web.Pages.EmployeeSchedules
 
         public async Task OnGetAsync(int id)
         {
-            var response = await _httpClient.GetFromJsonAsync<ApiResponseModel<EmployeeScheduleResponse>>($"https://localhost:7200/api/v1/prn231-hairsalon/schedules/{id}");
+            var response = await _httpClient.GetFromJsonAsync<ApiResponseModel<EmployeeScheduleResponse>>($"http://localhost:5255/api/v1/prn231-hairsalon/schedules/{id}");
 
             if (response != null && response.StatusCode == HttpStatusCode.OK && response.Response != null)
             {
