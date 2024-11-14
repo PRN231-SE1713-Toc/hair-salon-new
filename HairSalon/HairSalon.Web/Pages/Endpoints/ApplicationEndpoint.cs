@@ -35,6 +35,9 @@
         // Hair service endpoints
         public const string GetHairServiceEndpoint = Domain + "hair-services";
 
+        // Payment endpounts
+        public const string PaymentVNPayEndpoint = Domain + "payment/vnpay";
+
         /// <summary>
         /// Methods: POST, PUT, DELETE
         /// </summary>
