@@ -57,8 +57,7 @@ namespace HairSalon.Web.Pages
                     _httpContextAccessor.HttpContext?.Session.SetString("EmpName", employee.Name);
                     _httpContextAccessor.HttpContext?.Session.SetString("EmpRole", employee.Role);
                     _httpContextAccessor.HttpContext?.Session.SetString("EmpToken", employee.AccessToken);
-
-                    // TODO: change the url
+                    
                     return RedirectToPage("/Appointments/Index");
                 }
             }
