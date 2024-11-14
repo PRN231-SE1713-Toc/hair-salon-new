@@ -1,0 +1,16 @@
+﻿@page "/Payments/PaymentFailed"
+@model HairSalon.Web.Pages.Payments.PaymentFailedModel
+@{
+    ViewData["Title"] = "Thanh toán thất bại";
+    Layout = "_Layout";
+}
+
+<h2>Thanh toán thất bại</h2>
+
+<div class="alert alert-danger">
+    Rất tiếc, giao dịch của bạn không thành công. 
+</div>
+
+<div>
+    <a asp-page="/Index" class="btn btn-secondary">Trở về trang chủ</a>
+</div>

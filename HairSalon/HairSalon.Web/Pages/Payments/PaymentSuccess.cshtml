@@ -1,0 +1,16 @@
+﻿@page "/Payments/PaymentSuccess"
+@model HairSalon.Web.Pages.Payments.PaymentSuccessModel
+@{
+    ViewData["Title"] = "Thanh toán thành công";
+    Layout = "_Layout";
+}
+
+<h2>Thanh toán thành công</h2>
+
+<div class="alert alert-success">
+    Cảm ơn bạn đã thanh toán! Giao dịch của bạn đã được xác nhận thành công.
+</div>
+
+<div>
+    <a asp-page="/Index" class="btn btn-primary">Trở về trang chủ</a>
+</div>

@@ -1,0 +1,28 @@
+﻿@page 
+@model HairSalon.Web.Pages.Payments.PaymentConfirmationModel
+@{
+    ViewData["Title"] = "Xác nhận Thanh toán";
+}
+
+<h2>Xác nhận Thanh toán</h2>
+
+<div>
+    <h4>Thông tin Đặt lịch</h4>
+    <div>
+        <label><b>Mã Đặt lịch:</b></label>
+        <span>@Model.AppointmentId</span>
+    </div>
+    <div>
+        <label><b>Mã Khách hàng:</b></label>
+        <span>@Model.CustomerId</span>
+    </div>
+</div>
+
+<div class="alert alert-info">
+    Vui lòng kiểm tra lại thông tin trước khi tiến hành thanh toán.
+</div>
+
+<form method="post">
+    <button type="submit" class="btn btn-primary">Thanh toán</button>
+    <a asp-page="./Index" class="btn btn-secondary">Hủy bỏ</a>
+</form>

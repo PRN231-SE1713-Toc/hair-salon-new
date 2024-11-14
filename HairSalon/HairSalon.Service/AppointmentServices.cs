@@ -83,6 +83,22 @@ namespace HairSalon.Service
             }
         }
 
+        public ICollection<AppointmentService> ConvertAppointmentServiceDtos(IEnumerable<AppointmentServiceDto> serviceDtos)
+        {
+            return serviceDtos.Select(serviceDto => new AppointmentService
+            {
+                Id = serviceDto.Id,
+                AppointmentId = serviceDto.AppointmentId,
+                ServiceId = serviceDto.ServiceId,
+                CurrentPrice = serviceDto.CurrentPrice,
+                Service = new Core.Entities.Service
+                {
+                    Id = serviceDto.ServiceId,
+                    Name = serviceDto.ServiceName ?? string.Empty
+                }
+            }).ToList();
+        }
+
         public async Task<string> DeleteAppointment(int id)
         {
             try {
@@ -313,6 +329,32 @@ namespace HairSalon.Service
 
             return appointments;
         }
+
+        public async Task<string> UpdateAppointmentStatus(int appointmentId, AppointmentStatus newStatus)
+        {
+            try
+            {
+                var appointment = await _unitOfWork.AppointmentRepository.FindByIdAsync(appointmentId);
+                if (appointment == null)
+                {
+                    return "Appointment not found";
+                }
+
+                appointment.AppointmentStatus = newStatus;
+                _unitOfWork.AppointmentRepository.Update(appointment);
+
+                await _unitOfWork.CommitAsync();
+
+                return "Appointment status updated successfully";
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return $"Error updating appointment status: {ex.Message}";
+            }
+        }
+
+
 
         public async Task<string> UpdateAppointment(AppointmentUpdateModel updatedAppointment)
         {
